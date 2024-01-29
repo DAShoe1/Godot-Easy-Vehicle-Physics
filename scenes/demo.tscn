@@ -1,0 +1,57 @@
+[gd_scene load_steps=7 format=3 uid="uid://d2xf4wuh2u4t6"]
+
+[ext_resource type="PackedScene" uid="uid://c3ixqkc6k13yi" path="res://scenes/vehicle_controller.tscn" id="1_lup1j"]
+[ext_resource type="PackedScene" uid="uid://fo6kt54q87tf" path="res://scenes/car.tscn" id="2_oiv4q"]
+[ext_resource type="PackedScene" uid="uid://b2hlchrj4h2b7" path="res://scenes/engine_sound.tscn" id="4_r1tsm"]
+[ext_resource type="Script" path="res://scripts/gui.gd" id="5_haswc"]
+[ext_resource type="PackedScene" uid="uid://dxnvsoi1pvfeu" path="res://scenes/demo_track.tscn" id="6_3l0qk"]
+[ext_resource type="Script" path="res://scripts/camera.gd" id="6_vitqy"]
+
+[node name="ArcadeDemo" type="Node3D"]
+
+[node name="VehicleController" parent="." node_paths=PackedStringArray("vehicle_node") instance=ExtResource("1_lup1j")]
+vehicle_node = NodePath("VehicleRigidBody")
+
+[node name="VehicleRigidBody" parent="VehicleController" instance=ExtResource("2_oiv4q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.926611, 0)
+center_of_mass_mode = 1
+linear_damp_mode = 1
+angular_damp_mode = 1
+
+[node name="EngineSound" parent="VehicleController/VehicleRigidBody" node_paths=PackedStringArray("vehicle") instance=ExtResource("4_r1tsm")]
+max_db = -24.0
+vehicle = NodePath("..")
+
+[node name="GUI" type="Control" parent="." node_paths=PackedStringArray("vehicle")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_haswc")
+vehicle = NodePath("../VehicleController/VehicleRigidBody")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GUI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Speed" type="Label" parent="GUI/VBoxContainer"]
+layout_mode = 2
+
+[node name="RPM" type="Label" parent="GUI/VBoxContainer"]
+layout_mode = 2
+
+[node name="Gear" type="Label" parent="GUI/VBoxContainer"]
+layout_mode = 2
+
+[node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("follow_this")]
+transform = Transform3D(1, 0, 0, 0, 0.989776, 0.142629, 0, -0.142629, 0.989776, 4.04332, 2, 1.76849)
+script = ExtResource("6_vitqy")
+follow_this = NodePath("../VehicleController/VehicleRigidBody")
+
+[node name="Demo" parent="." instance=ExtResource("6_3l0qk")]
