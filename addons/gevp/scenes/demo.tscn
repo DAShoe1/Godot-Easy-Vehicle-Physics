@@ -1,11 +1,11 @@
 [gd_scene load_steps=7 format=3 uid="uid://d2xf4wuh2u4t6"]
 
-[ext_resource type="PackedScene" uid="uid://c3ixqkc6k13yi" path="res://scenes/vehicle_controller.tscn" id="1_lup1j"]
-[ext_resource type="PackedScene" uid="uid://fo6kt54q87tf" path="res://scenes/car.tscn" id="2_oiv4q"]
-[ext_resource type="PackedScene" uid="uid://b2hlchrj4h2b7" path="res://scenes/engine_sound.tscn" id="4_r1tsm"]
-[ext_resource type="Script" path="res://scripts/gui.gd" id="5_haswc"]
-[ext_resource type="PackedScene" uid="uid://dxnvsoi1pvfeu" path="res://scenes/demo_track.tscn" id="6_3l0qk"]
-[ext_resource type="Script" path="res://scripts/camera.gd" id="6_vitqy"]
+[ext_resource type="PackedScene" uid="uid://c3ixqkc6k13yi" path="res://addons/gevp/scenes/vehicle_controller.tscn" id="1_lup1j"]
+[ext_resource type="PackedScene" uid="uid://fo6kt54q87tf" path="res://addons/gevp/scenes/car.tscn" id="2_oiv4q"]
+[ext_resource type="PackedScene" uid="uid://b2hlchrj4h2b7" path="res://addons/gevp/scenes/engine_sound.tscn" id="4_r1tsm"]
+[ext_resource type="Script" path="res://addons/gevp/scripts/gui.gd" id="5_haswc"]
+[ext_resource type="PackedScene" uid="uid://dxnvsoi1pvfeu" path="res://addons/gevp/scenes/demo_track.tscn" id="6_3l0qk"]
+[ext_resource type="Script" path="res://addons/gevp/scripts/camera.gd" id="6_vitqy"]
 
 [node name="ArcadeDemo" type="Node3D"]
 

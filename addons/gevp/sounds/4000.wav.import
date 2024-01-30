@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://dio25xn4f7s6f"
-path="res://.godot/imported/4000.wav-524a6e1523245b12971c03b5c5dd2933.sample"
+path="res://.godot/imported/4000.wav-5b7af0defc40e9d8fb80f07cca8d9fcd.sample"
 
 [deps]
 
-source_file="res://sounds/4000.wav"
-dest_files=["res://.godot/imported/4000.wav-524a6e1523245b12971c03b5c5dd2933.sample"]
+source_file="res://addons/gevp/sounds/4000.wav"
+dest_files=["res://.godot/imported/4000.wav-5b7af0defc40e9d8fb80f07cca8d9fcd.sample"]
 
 [params]
 

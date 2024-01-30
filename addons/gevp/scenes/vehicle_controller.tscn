@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://c3ixqkc6k13yi"]
 
-[ext_resource type="Script" path="res://scripts/vehicle_controllergd.gd" id="1_vqaod"]
+[ext_resource type="Script" path="res://addons/gevp/scripts/vehicle_controllergd.gd" id="1_vqaod"]
 
 [node name="VehicleController" type="Node3D"]
 script = ExtResource("1_vqaod")

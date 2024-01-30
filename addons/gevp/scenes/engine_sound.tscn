@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://b2hlchrj4h2b7"]
+
+[ext_resource type="AudioStream" uid="uid://dio25xn4f7s6f" path="res://addons/gevp/sounds/4000.wav" id="1_5omax"]
+[ext_resource type="Script" path="res://addons/gevp/scripts/engine_sound.gd" id="2_noxdw"]
+
+[node name="EngineSound" type="AudioStreamPlayer3D"]
+stream = ExtResource("1_5omax")
+autoplay = true
+script = ExtResource("2_noxdw")

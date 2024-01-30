@@ -11,13 +11,9 @@ config_version=5
 [application]
 
 config/name="Godot Easy Vehicle Physics"
-run/main_scene="res://scenes/demo.tscn"
+run/main_scene="res://addons/gevp/scenes/demo.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
-config/icon="res://icon.png"
-
-[display]
-
-window/size/mode=3
+config/icon="res://addons/gevp/icon.png"
 
 [input]
 
