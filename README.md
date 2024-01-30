@@ -2,7 +2,7 @@
 A ray cast based rigid body vehicle for Godot 4.2
 
 ## Description
-A physics based vehicle controller designed to play well on a keyboard and be easy to configure. All parameters are contained in one script (vehicle.gd) and tooltips are provided for all of them. A vehicle scene (car.tscn) provides an example of the car configured in an arcade style and a demo scene (demo.tscn) provides a basic track, input controler, and engine sound controller as an example.
+A physics based vehicle controller designed to play well on a keyboard and be easy to configure. All parameters are contained in one script (vehicle.gd) and tooltips are provided for all of them. A vehicle scene (car.tscn) provides an example of the car configured in an arcade style and a demo scene (demo.tscn) provides a basic track, input controller, and engine sound controller as an example.
 
 ## Features
 This controller features many systems that assist with making a competent vehicle such as:
@@ -15,7 +15,7 @@ This controller features many systems that assist with making a competent vehicl
 - Automatic Gearbox
 - Locking Differentials
 - Tire Grip Assists
-- Calculated suspension parameters; Proper suspension parameters can be difficult to get right, therefore this controller will calculate spring rates and damping rates based on ratios and weight distribution.
+- Calculated suspension parameters; proper suspension parameters can be difficult to get right, therefore this controller will calculate spring rates and damping rates based on ratios and weight distribution.
 
 ## Controls
 - Steering: Left: ← or a Right: → or d
