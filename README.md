@@ -18,14 +18,14 @@ This controller features many systems that assist with making a competent vehicl
 - Calculated suspension parameters; Proper suspension parameters can be difficult to get right, therefore this controller will calculate spring rates and damping rates based on ratios and weight distribution.
 
 ## Controls
-Steering: Left: ← or a Right: → or d
-Throttle: ↑ or w
-Brake: ↓ or s
-Handbrake: Space
-Clutch: C
-Toggle Gearbox (Auto/Manual): T
-Shift Up: F or +
-Shift Down: R or -
+- Steering: Left: ← or a Right: → or d
+- Throttle: ↑ or w
+- Brake: ↓ or s
+- Handbrake: Space
+- Clutch: C
+- Toggle Gearbox (Auto/Manual): T
+- Shift Up: F or +
+- Shift Down: R or -
 
 ## Physics Engine
 This controller works well in both the Godot and Jolt physics engines. A physics tick rate of at least 120 is recommended and higher values can be used, but note that vehicle behavior will be different when switching tick rates.
