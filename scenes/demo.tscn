@@ -50,7 +50,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("follow_this")]
-transform = Transform3D(1, 0, 0, 0, 0.989776, 0.142629, 0, -0.142629, 0.989776, 4.04332, 2, 1.76849)
+transform = Transform3D(1, 0, 0, 0, 0.989776, 0.142629, 0, -0.142629, 0.989776, 4.05282, 1.58316, 5.80061)
 script = ExtResource("6_vitqy")
 follow_this = NodePath("../VehicleController/VehicleRigidBody")
 

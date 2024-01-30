@@ -105,4 +105,4 @@ shape = SubResource("BoxShape3D_28hur")
 environment = SubResource("Environment_hn4xq")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.895975, -0.245634, 0.369989, 0, 0.833114, 0.553101, -0.444104, -0.495565, 0.74645, 0, 2.26991, 0)
+transform = Transform3D(0.527563, -0.469868, 0.707743, -1.33511e-08, 0.833114, 0.553101, -0.849516, -0.291796, 0.43952, 0, 2.26991, 0)
