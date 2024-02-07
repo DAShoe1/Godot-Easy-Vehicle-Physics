@@ -43,6 +43,8 @@ var force_vector := Vector2.ZERO
 var slip_vector := Vector2.ZERO
 var previous_compression := 0.0
 var spring_current_length := 0.0
+var antiroll_force := 0.0
+var damping_force := 0.0
 var steering_ratio := 0.0
 var last_collider
 var last_collision_point := Vector3.ZERO
@@ -180,7 +182,8 @@ func process_suspension(opposite_compression : float, delta : float) -> float:
 	previous_compression = compression
 	
 	spring_force = compression * spring_rate
-	spring_force += antiroll * (compression - opposite_compression)
+	antiroll_force = antiroll * (compression - opposite_compression)
+	spring_force += antiroll_force
 	
 	## If the suspension is bottomed out, apply some additional forces to help keep the vehicle body
 	## from colliding with the surface.
@@ -194,14 +197,16 @@ func process_suspension(opposite_compression : float, delta : float) -> float:
 	
 	if spring_speed_mm_per_seconds >= 0:
 		if spring_speed_mm_per_seconds > fast_damp_threshold:
-			spring_force += spring_speed_mm_per_seconds * (fast_bump + bottom_out_damping_fast)
+			damping_force = spring_speed_mm_per_seconds * (fast_bump + bottom_out_damping_fast)
 		else:
-			spring_force += spring_speed_mm_per_seconds * (slow_bump + bottom_out_damping)
+			damping_force = spring_speed_mm_per_seconds * (slow_bump + bottom_out_damping)
 	else :
 		if spring_speed_mm_per_seconds < -fast_damp_threshold:
-			spring_force += spring_speed_mm_per_seconds * slow_rebound
+			damping_force = spring_speed_mm_per_seconds * slow_rebound
 		else:
-			spring_force += spring_speed_mm_per_seconds * fast_rebound
+			damping_force = spring_speed_mm_per_seconds * fast_rebound
+	
+	spring_force += damping_force
 	
 	spring_force = maxf(0, spring_force + bottom_out_force)
 	return compression

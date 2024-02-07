@@ -1,11 +1,13 @@
-[gd_scene load_steps=7 format=3 uid="uid://d2xf4wuh2u4t6"]
+[gd_scene load_steps=9 format=3 uid="uid://d2xf4wuh2u4t6"]
 
 [ext_resource type="PackedScene" uid="uid://c3ixqkc6k13yi" path="res://addons/gevp/scenes/vehicle_controller.tscn" id="1_lup1j"]
-[ext_resource type="PackedScene" uid="uid://fo6kt54q87tf" path="res://addons/gevp/scenes/car.tscn" id="2_oiv4q"]
+[ext_resource type="PackedScene" uid="uid://fo6kt54q87tf" path="res://addons/gevp/scenes/arcade_car.tscn" id="2_oiv4q"]
 [ext_resource type="PackedScene" uid="uid://b2hlchrj4h2b7" path="res://addons/gevp/scenes/engine_sound.tscn" id="4_r1tsm"]
 [ext_resource type="Script" path="res://addons/gevp/scripts/gui.gd" id="5_haswc"]
-[ext_resource type="PackedScene" uid="uid://dxnvsoi1pvfeu" path="res://addons/gevp/scenes/demo_track.tscn" id="6_3l0qk"]
+[ext_resource type="PackedScene" uid="uid://dxnvsoi1pvfeu" path="res://addons/gevp/scenes/track.tscn" id="6_3l0qk"]
 [ext_resource type="Script" path="res://addons/gevp/scripts/camera.gd" id="6_vitqy"]
+[ext_resource type="Script" path="res://addons/gevp/scripts/debug.gd" id="7_vstgd"]
+[ext_resource type="Script" path="res://addons/gevp/scripts/debug_ui.gd" id="8_1up8y"]
 
 [node name="ArcadeDemo" type="Node3D"]
 
@@ -52,6 +54,21 @@ layout_mode = 2
 [node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("follow_this")]
 transform = Transform3D(1, 0, 0, 0, 0.989776, 0.142629, 0, -0.142629, 0.989776, 4.05282, 1.58316, 5.80061)
 script = ExtResource("6_vitqy")
+follow_distance = 3
 follow_this = NodePath("../VehicleController/VehicleRigidBody")
 
 [node name="Demo" parent="." instance=ExtResource("6_3l0qk")]
+
+[node name="Debug" type="Node" parent="." node_paths=PackedStringArray("vehicle")]
+script = ExtResource("7_vstgd")
+vehicle = NodePath("../VehicleController/VehicleRigidBody")
+
+[node name="DebugUI" type="Control" parent="Debug"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("8_1up8y")
+metadata/_edit_use_anchors_ = true

@@ -1,0 +1,71 @@
+[gd_scene load_steps=9 format=3 uid="uid://y4hs21kwif5o"]
+
+[ext_resource type="PackedScene" uid="uid://c3ixqkc6k13yi" path="res://addons/gevp/scenes/vehicle_controller.tscn" id="1_6465w"]
+[ext_resource type="PackedScene" uid="uid://ccs7xtede51mo" path="res://addons/gevp/scenes/simcade_car.tscn" id="2_ms26v"]
+[ext_resource type="PackedScene" uid="uid://b2hlchrj4h2b7" path="res://addons/gevp/scenes/engine_sound.tscn" id="3_o8yet"]
+[ext_resource type="Script" path="res://addons/gevp/scripts/gui.gd" id="4_s0wyh"]
+[ext_resource type="Script" path="res://addons/gevp/scripts/camera.gd" id="5_5rui7"]
+[ext_resource type="PackedScene" uid="uid://dxnvsoi1pvfeu" path="res://addons/gevp/scenes/track.tscn" id="6_up3gk"]
+[ext_resource type="Script" path="res://addons/gevp/scripts/debug.gd" id="7_ht2x6"]
+[ext_resource type="Script" path="res://addons/gevp/scripts/debug_ui.gd" id="8_a7fg4"]
+
+[node name="ArcadeDemo" type="Node3D"]
+
+[node name="VehicleController" parent="." node_paths=PackedStringArray("vehicle_node") instance=ExtResource("1_6465w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.09154, 0)
+vehicle_node = NodePath("VehicleRigidBody")
+
+[node name="VehicleRigidBody" parent="VehicleController" instance=ExtResource("2_ms26v")]
+
+[node name="EngineSound" parent="VehicleController/VehicleRigidBody" node_paths=PackedStringArray("vehicle") instance=ExtResource("3_o8yet")]
+vehicle = NodePath("..")
+
+[node name="GUI" type="Control" parent="." node_paths=PackedStringArray("vehicle")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_s0wyh")
+vehicle = NodePath("../VehicleController/VehicleRigidBody")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GUI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Speed" type="Label" parent="GUI/VBoxContainer"]
+layout_mode = 2
+
+[node name="RPM" type="Label" parent="GUI/VBoxContainer"]
+layout_mode = 2
+
+[node name="Gear" type="Label" parent="GUI/VBoxContainer"]
+layout_mode = 2
+
+[node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("follow_this")]
+transform = Transform3D(1, 0, 0, 0, 0.989776, 0.142629, 0, -0.142629, 0.989776, 4.05282, 4.72172, 5.80061)
+script = ExtResource("5_5rui7")
+follow_distance = 8
+follow_height = 5
+follow_this = NodePath("../VehicleController/VehicleRigidBody")
+
+[node name="Demo" parent="." instance=ExtResource("6_up3gk")]
+
+[node name="Debug" type="Node" parent="." node_paths=PackedStringArray("vehicle")]
+script = ExtResource("7_ht2x6")
+vehicle = NodePath("../VehicleController/VehicleRigidBody")
+
+[node name="DebugUI" type="Control" parent="Debug"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("8_a7fg4")
+metadata/_edit_use_anchors_ = true

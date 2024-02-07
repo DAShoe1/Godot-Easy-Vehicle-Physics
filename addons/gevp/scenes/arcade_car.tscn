@@ -351,10 +351,12 @@ rear_left_wheel = NodePath("WheelRearLeft")
 rear_right_wheel = NodePath("WheelRearRight")
 stability_yaw_ground_multiplier = 6.0
 torque_curve = SubResource("Curve_bt7kc")
-front_torque_split = 0.5
+variable_torque_split = true
+front_variable_split = 0.5
 center_of_gravity_height_offset = -0.25
 front_damping_ratio = 0.6
 rear_damping_ratio = 0.6
+braking_grip_multiplier = 2.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4545e-14, 0.2, 0)

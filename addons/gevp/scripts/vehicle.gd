@@ -301,6 +301,7 @@ var motor_rpm := 0.0
 
 var steering_amount := 0.0
 var steering_exponent_amount := 0.0
+var true_steering_amount := 0.0
 var throttle_amount := 0.0
 var brake_amount := 0.0
 var clutch_amount := 0.0
@@ -314,6 +315,7 @@ var complete_shift_delta_time := 0.0
 var last_shift_delta_time := 0.0
 var average_drive_wheel_radius := 0.0
 var current_torque_split := 0.0
+var true_torque_split := 0.0
 var brake_force := 0.0
 var max_brake_force := 0.0
 var handbrake_force := 0.0
@@ -325,6 +327,10 @@ var is_up_shifting := false
 var need_clutch := false
 var tcs_active := false
 var stability_active := false
+var stability_yaw_torque := 0.0
+var stability_torque_vector := Vector3.ZERO
+var front_axle_position := Vector3.ZERO
+var rear_axle_position := Vector3.ZERO
 
 var delta_time := 0.0
 
@@ -337,6 +343,7 @@ class Axle:
 	var handbrake := false
 	var brake_bias := 0.5
 	var rotation_split := 0.5
+	var applied_split := 0.5
 	var torque_vectoring := 0.0
 	var suspension_compression_left := 0.0
 	var suspension_compression_right := 0.0
@@ -611,6 +618,8 @@ func process_steering(delta):
 	
 	steer_correction *= steer_correction_amount
 	
+	true_steering_amount = clampf(steering_adjust + steer_correction, -max_steering_angle, max_steering_angle)
+	
 	for wheel in wheel_array:
 		wheel.steer(steering_adjust + steer_correction, max_steering_angle)
 
@@ -724,29 +733,33 @@ func process_transmission(delta : float):
 		var current_ideal_gear_rpm := gear_ratios[current_gear - 1] * final_drive * ideal_wheel_spin * ANGULAR_VELOCITY_TO_RPM
 		var current_real_gear_rpm = real_wheel_spin * ANGULAR_VELOCITY_TO_RPM
 		
-		var next_gear_rpm := 0.0
-		if current_gear < gear_ratios.size():
-			next_gear_rpm = get_gear_ratio(current_gear + 1) * ideal_wheel_spin * ANGULAR_VELOCITY_TO_RPM
-		var previous_gear_rpm := 0.0
-		if current_gear - 1 > 0:
-			previous_gear_rpm = get_gear_ratio(current_gear - 1) * maxf(drivetrain_spin, ideal_wheel_spin) * ANGULAR_VELOCITY_TO_RPM
 		if current_gear == -1:
 			reversing = true
 		
-		if current_gear < gear_ratios.size():
-			if current_gear > 0:
-				if current_ideal_gear_rpm > max_rpm:
+		if not reversing:
+			var next_gear_rpm := 0.0
+			if current_gear < gear_ratios.size():
+				next_gear_rpm = get_gear_ratio(current_gear + 1) * ideal_wheel_spin * ANGULAR_VELOCITY_TO_RPM
+			var previous_gear_rpm := 0.0
+			if current_gear - 1 > 0:
+				previous_gear_rpm = get_gear_ratio(current_gear - 1) * maxf(drivetrain_spin, ideal_wheel_spin) * ANGULAR_VELOCITY_TO_RPM
+			
+			
+			if current_gear < gear_ratios.size():
+				if current_gear > 0:
+					if current_ideal_gear_rpm > max_rpm:
+						if delta_time - last_shift_delta_time > shift_time:
+							shift(1)
+					if current_ideal_gear_rpm > max_rpm * 0.8 and current_real_gear_rpm > max_rpm:
+						if delta_time - last_shift_delta_time > shift_time:
+							shift(1)
+				elif current_gear == 0 and motor_rpm > clutch_out_rpm:
+					shift(1)
+			if current_gear - 1 > 0:
+				if current_gear > 1 and previous_gear_rpm < 0.75 * max_rpm:
 					if delta_time - last_shift_delta_time > shift_time:
-						shift(1)
-				if current_ideal_gear_rpm > max_rpm * 0.8 and current_real_gear_rpm > max_rpm:
-					if delta_time - last_shift_delta_time > shift_time:
-						shift(1)
-			elif current_gear == 0 and motor_rpm > clutch_out_rpm:
-				shift(1)
-		if current_gear - 1 > 0:
-			if current_gear > 1 and previous_gear_rpm < 0.75 * max_rpm:
-				if delta_time - last_shift_delta_time > shift_time:
-					shift(-1)
+						shift(-1)
+		
 		if absf(current_gear) <= 1 and brake_input > 0.75:
 			if not reversing:
 				if speed < 1.0 or local_velocity.z > 0.0:
@@ -776,7 +789,7 @@ func process_drive(delta : float):
 	
 	## Same formula to keep the motor and drivetrain couple, but to keep the front and rear axles
 	## coupled. Modified to allow for a torque split.
-	var true_torque_split := lerpf(front_torque_split, front_variable_split, current_torque_split)
+	true_torque_split = lerpf(front_torque_split, front_variable_split, current_torque_split)
 	var axle_a := front_axle
 	var axle_b := rear_axle
 	if true_torque_split <= 0.5:
@@ -822,8 +835,9 @@ func process_axle_drive(axle : Axle, torque : float, drive_inertia : float, delt
 	
 	var rotation_sum := 0.0
 	var split = (axle.rotation_split + 1.0) * 0.5
-	axle.wheels[0].process_torque(torque * split, drive_inertia, brake_force * 0.5 * axle.brake_bias, abs, delta)
-	axle.wheels[1].process_torque(torque * (1.0 - split), drive_inertia, brake_force * 0.5 * axle.brake_bias, abs, delta)
+	axle.applied_split = axle.rotation_split
+	rotation_sum += axle.wheels[0].process_torque(torque * split, drive_inertia, brake_force * 0.5 * axle.brake_bias, abs, delta)
+	rotation_sum += axle.wheels[1].process_torque(torque * (1.0 - split), drive_inertia, brake_force * 0.5 * axle.brake_bias, abs, delta)
 	axle.rotation_split = clamp(rotation_sum, -1.0, 1.0)
 
 func process_forces(delta : float):
@@ -838,24 +852,27 @@ func process_stability():
 	## Calculates the angle of the vehicle in relation to the direction of travel
 	## and applies necessary stabilizing forces.
 	if enable_stability:
-		var yaw_correction := 0.0
+		stability_yaw_torque = 0.0
 		var plane_xz = Vector2(local_velocity.x, local_velocity.z)
 		if plane_xz.y < 0 and plane_xz.length() > 1.0:
 			plane_xz = plane_xz.normalized()
 			var yaw_angle = 1.0 - absf(plane_xz.dot(Vector2.UP))
 			if yaw_angle > stability_yaw_engage_angle and signf(angular_velocity.y) == signf(plane_xz.x):
-				yaw_correction = (yaw_angle - stability_yaw_engage_angle) * stability_yaw_strength
-				yaw_correction *= vehicle_inertia.y * clampf(absf(angular_velocity.y) - 0.5, 0.0, 1.0)
+				stability_yaw_torque = (yaw_angle - stability_yaw_engage_angle) * stability_yaw_strength
+				stability_yaw_torque *= vehicle_inertia.y * clampf(absf(angular_velocity.y) - 0.5, 0.0, 1.0)
 		
+		stability_torque_vector = Vector3.ZERO
 		if get_wheel_contact_count() < 3:
-			var torque_vector := global_transform.basis.y.cross(Vector3.UP)
-			apply_torque((torque_vector * vehicle_inertia * stability_upright_spring) + (-angular_velocity * stability_upright_damping))
+			stability_torque_vector = (global_transform.basis.y.cross(Vector3.UP) * vehicle_inertia * stability_upright_spring) + (-angular_velocity * stability_upright_damping)
+			apply_torque(stability_torque_vector)
 		else:
-			yaw_correction *= stability_yaw_ground_multiplier
+			stability_yaw_torque *= stability_yaw_ground_multiplier
 		
-		if yaw_correction:
+		if stability_yaw_torque:
 			is_stability_on = true
-			apply_torque(global_transform.basis.y * yaw_correction * signf(-local_velocity.x))
+			stability_yaw_torque *= signf(-local_velocity.x)
+			apply_torque(global_transform.basis.y * stability_yaw_torque)
+	
 	stability_active = is_stability_on
 
 func manual_shift(count : int):
@@ -934,7 +951,8 @@ func get_torque_at_rpm(lookup_rpm : float) -> float:
 func get_max_steering_slip_angle() -> float:
 	var steering_slip := 0.0
 	for wheel in front_axle.wheels:
-		steering_slip = maxf(steering_slip, wheel.slip_vector.x)
+		if absf(steering_slip) < absf(wheel.slip_vector.x):
+			steering_slip = wheel.slip_vector.x
 	return steering_slip
 
 func calculate_average_tire_friction(weight : float, surface : String) -> float:
@@ -949,8 +967,8 @@ func calculate_brake_force():
 	max_handbrake_force = ((friction * braking_grip_multiplier * 0.05) / average_drive_wheel_radius)
 
 func calculate_center_of_gravity(front_distribution : float) -> Vector3:
-	var front_axle_position := front_left_wheel.position.lerp(front_right_wheel.position, 0.5)
-	var rear_axle_position := rear_left_wheel.position.lerp(rear_right_wheel.position, 0.5)
+	front_axle_position = front_left_wheel.position.lerp(front_right_wheel.position, 0.5)
+	rear_axle_position = rear_left_wheel.position.lerp(rear_right_wheel.position, 0.5)
 	return lerp(rear_axle_position, front_axle_position, front_distribution)
 
 func calculate_spring_rate(weight : float, spring_length : float, resting_ratio : float) -> float:
