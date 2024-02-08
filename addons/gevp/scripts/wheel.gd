@@ -1,6 +1,9 @@
 # Portions are Copyright (c) 2021 Dechode
 # https://github.com/Dechode/Godot-Advanced-Vehicle
 
+# Portions are Copyright (c) 2024 Baron Wittman
+# https://lupine-vidya.itch.io/gdsim/devlog/677572/series-driving-simulator-workshop-mirror
+
 class_name Wheel
 extends RayCast3D
 

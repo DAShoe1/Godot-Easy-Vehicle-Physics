@@ -39,5 +39,5 @@ This controller features many systems that assist with making a competent vehicl
 This controller works well in both the Godot and Jolt physics engines. A physics tick rate of at least 120 is recommended and higher values can be used, but note that vehicle behavior will be different when switching tick rates.
 
 ## Acknowledgments
-Huge thanks to Dechode for sharing his project to the Godot community. Sharing this project is my way of paying it forward. Portions of this code are based on [Dechode's Godot Advanced Vehicle](https://github.com/Dechode/Godot-Advanced-Vehicle) and attribution is included in the appropriate source files.
+Huge thanks to Dechode and Wolfe for sharing their projects to the Godot community. Sharing this project is my way of paying it forward. Portions of this code are based on [Dechode's Godot Advanced Vehicle](https://github.com/Dechode/Godot-Advanced-Vehicle) and [SERIES: Driving Simulator Workshop](https://lupine-vidya.itch.io/gdsim/devlog/677572/series-driving-simulator-workshop-mirror) and attribution is included in the appropriate source files.
 The car model provided as a demo is from [Kenney.nl Car Kit](https://www.kenney.nl/assets/car-kit)
