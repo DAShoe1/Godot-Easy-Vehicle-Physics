@@ -61,15 +61,21 @@ var current_tire_stiffness := 0.0
 var abs_enable_time := 0.0
 var limit_spin := false
 var is_driven := false
+var opposite_wheel : Wheel
+var beam_axle := 0.0
 
 var vehicle : Vehicle
 
 func _process(delta):
 	if wheel_node:
 		wheel_node.position.y = min(0, -spring_current_length)
-		wheel_node.rotate_x(wrapf(-spin * delta, 0, TAU))
-
+		if not is_zero_approx(beam_axle):
+			var wheel_lookat_vector := (opposite_wheel.transform * opposite_wheel.wheel_node.position) - (transform * wheel_node.position)
+			wheel_node.rotation.z = wheel_lookat_vector.angle_to(Vector3.RIGHT * beam_axle) * signf(wheel_lookat_vector.y * beam_axle)
+		wheel_node.rotation.x -= (wrapf(spin * delta, 0, TAU))
+		
 func initialize():
+	wheel_node.rotation_order = EULER_ORDER_ZXY
 	wheel_moment = 0.5 * wheel_mass * pow(tire_radius, 2)
 	set_target_position(Vector3.DOWN * (spring_length + tire_radius))
 	vehicle = get_parent()

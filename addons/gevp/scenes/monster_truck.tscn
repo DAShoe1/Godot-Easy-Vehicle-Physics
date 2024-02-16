@@ -446,12 +446,14 @@ front_damping_ratio = 0.2
 front_bump_damp_multiplier = 1.0
 front_rebound_damp_multiplier = 1.0
 front_arb_ratio = 0.0
+front_beam_axle = true
 rear_spring_length = 0.711
 rear_resting_ratio = 0.3
 rear_damping_ratio = 0.2
 rear_bump_damp_multiplier = 1.0
 rear_rebound_damp_multiplier = 1.0
 rear_arb_ratio = 0.0
+rear_beam_axle = true
 front_tire_radius = 0.85
 front_tire_width = 1000.0
 front_wheel_mass = 363.0
@@ -470,7 +472,7 @@ script = ExtResource("2_6nusf")
 wheel_node = NodePath("FrontLeftWheel")
 
 [node name="FrontLeftWheel" type="Node3D" parent="WheelFrontLeft"]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+transform = Transform3D(-1, 0, 1.50996e-07, 0, 1, 0, -1.50996e-07, 0, -1, 0, 0, 0)
 
 [node name="Monster Truck wheel front left" type="MeshInstance3D" parent="WheelFrontLeft/FrontLeftWheel"]
 transform = Transform3D(100, 0, 0, 0, -1.19209e-05, 100, 0, -100, -1.19209e-05, 0, 0, 0)

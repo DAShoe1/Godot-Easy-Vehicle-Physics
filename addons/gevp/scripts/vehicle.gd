@@ -186,6 +186,10 @@ extends RigidBody3D
 ## Multiplier for the force applied when the suspension is fully compressed.
 ## If the vehicle bounces off large bumps, reducing this will help.
 @export var front_bump_stop_multiplier := 1.0
+## If true the wheels of this axle will be aligned as if they were attached to
+## a beam axle. This setting does not affect vehicle handling.
+@export var front_beam_axle := false
+
 @export_subgroup("Rear Axle", "rear_")
 ## The amount of suspension travel in meters. Rear suspension typically has
 ## more travel than the front.
@@ -217,7 +221,9 @@ extends RigidBody3D
 ## Multiplier for the force applied when the suspension is fully compressed.
 ## If the vehicle bounces off large bumps, reducing this will help.
 @export var rear_bump_stop_multiplier := 1.0
-
+## If true the wheels of this axle will be aligned as if they were attached to
+## a beam axle. This setting does not affect vehicle handling.
+@export var rear_beam_axle := false
 
 @export_group("Tires")
 ## Represents the length of the tire contact patch in the brush tire model.
@@ -384,10 +390,18 @@ func initialize():
 	front_axle.wheels.append(front_left_wheel)
 	front_axle.wheels.append(front_right_wheel)
 	front_axle.torque_vectoring = front_torque_vectoring
+	front_left_wheel.opposite_wheel = front_right_wheel
+	front_left_wheel.beam_axle = 1.0 if front_beam_axle else 0.0
+	front_right_wheel.opposite_wheel = front_left_wheel
+	front_right_wheel.beam_axle = -1.0 if front_beam_axle else 0.0
 	rear_axle = Axle.new()
 	rear_axle.wheels.append(rear_left_wheel)
 	rear_axle.wheels.append(rear_right_wheel)
 	rear_axle.torque_vectoring = rear_torque_vectoring
+	rear_left_wheel.opposite_wheel = rear_right_wheel
+	rear_left_wheel.beam_axle = 1.0 if rear_beam_axle else 0.0
+	rear_right_wheel.opposite_wheel = rear_left_wheel
+	rear_right_wheel.beam_axle = -1.0 if rear_beam_axle else 0.0
 	rear_axle.handbrake = true
 	
 	axles.append(front_axle)
