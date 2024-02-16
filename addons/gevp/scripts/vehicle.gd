@@ -661,12 +661,13 @@ func process_motor(delta : float):
 		if new_rpm > max_rpm * 1.1:
 			motor_is_redline = true
 	
-	need_clutch = false
 	motor_rpm += ANGULAR_VELOCITY_TO_RPM * delta * (torque_output - drag_torque) / motor_moment
 	
 	## Disengage clutch when near idle
 	if motor_rpm < idle_rpm + 100:
 		need_clutch = true
+	elif new_rpm > clutch_out_rpm:
+		need_clutch = false
 	
 	motor_rpm = maxf(motor_rpm, idle_rpm)
 
@@ -821,7 +822,7 @@ func process_axle_drive(axle : Axle, torque : float, drive_inertia : float, delt
 	## If enough torque is applied to the axle, lock to wheel speeds and add
 	## torque vectoring
 	if axle.is_drive_axle and axle.differential_lock_torque >= 0.0:
-		if torque > axle.differential_lock_torque:
+		if absf(torque) > axle.differential_lock_torque:
 			axle.rotation_split = 0.5 + (axle.torque_vectoring * -steering_input)
 			var couple_spin := axle.get_average_spin()
 			axle.wheels[0].spin = couple_spin * axle.rotation_split * 2.0
@@ -924,10 +925,14 @@ func get_is_a_wheel_slipping() -> bool:
 	return is_slipping
 
 func get_drivetrain_spin() -> float:
+	if drive_wheels.size() == 0:
+		return 0.0
+	
 	var drive_spin := 0.0
 	for wheel in drive_wheels:
-		drive_spin = maxf(drive_spin, wheel.spin)
-	return drive_spin
+		drive_spin += wheel.spin
+	
+	return drive_spin / drive_wheels.size()
 
 func get_drive_wheels_reaction_torque() -> float:
 	var reaction_torque := 0.0

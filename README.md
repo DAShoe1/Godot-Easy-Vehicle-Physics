@@ -18,10 +18,11 @@ This controller features many systems that assist with making a competent vehicl
 - Calculated suspension parameters; proper suspension parameters can be difficult to get right, therefore this controller will calculate spring rates and damping rates based on ratios and weight distribution.
 
 ## Examples
-3 example vehicles are included:
+4 example vehicles are included:
 - demo_arcade.tscn: Handles similar to an arcade style race car, lots of grip, easy to control, and lots of assists.
 - demo_simcade.tscn: Handles closer to a real car with assists to help keep the car under control.
 - demo_monster_truck.tscn: Handles like a monster truck, with very little assists.
+- demo_drift.tscn: Setup for easy drifting.
 
 ## Controls
 - Steering: Left: ← or a Right: → or d

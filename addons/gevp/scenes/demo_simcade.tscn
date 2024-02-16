@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://y4hs21kwif5o"]
+[gd_scene load_steps=10 format=3 uid="uid://y4hs21kwif5o"]
 
 [ext_resource type="PackedScene" uid="uid://c3ixqkc6k13yi" path="res://addons/gevp/scenes/vehicle_controller.tscn" id="1_6465w"]
 [ext_resource type="PackedScene" uid="uid://ccs7xtede51mo" path="res://addons/gevp/scenes/simcade_car.tscn" id="2_ms26v"]
 [ext_resource type="PackedScene" uid="uid://b2hlchrj4h2b7" path="res://addons/gevp/scenes/engine_sound.tscn" id="3_o8yet"]
+[ext_resource type="PackedScene" uid="uid://h6vdpba71kpr" path="res://addons/gevp/scenes/smoke_effect.tscn" id="4_6e2i6"]
 [ext_resource type="Script" path="res://addons/gevp/scripts/gui.gd" id="4_s0wyh"]
 [ext_resource type="Script" path="res://addons/gevp/scripts/camera.gd" id="5_5rui7"]
 [ext_resource type="PackedScene" uid="uid://dxnvsoi1pvfeu" path="res://addons/gevp/scenes/track.tscn" id="6_up3gk"]
@@ -18,6 +19,9 @@ vehicle_node = NodePath("VehicleRigidBody")
 [node name="VehicleRigidBody" parent="VehicleController" instance=ExtResource("2_ms26v")]
 
 [node name="EngineSound" parent="VehicleController/VehicleRigidBody" node_paths=PackedStringArray("vehicle") instance=ExtResource("3_o8yet")]
+vehicle = NodePath("..")
+
+[node name="Smoke" parent="VehicleController/VehicleRigidBody" node_paths=PackedStringArray("vehicle") instance=ExtResource("4_6e2i6")]
 vehicle = NodePath("..")
 
 [node name="GUI" type="Control" parent="." node_paths=PackedStringArray("vehicle")]

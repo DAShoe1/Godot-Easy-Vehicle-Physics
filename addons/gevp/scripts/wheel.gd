@@ -46,6 +46,7 @@ var force_vector := Vector2.ZERO
 var slip_vector := Vector2.ZERO
 var previous_compression := 0.0
 var spring_current_length := 0.0
+var max_spring_length := 0.0
 var antiroll_force := 0.0
 var damping_force := 0.0
 var steering_ratio := 0.0
@@ -72,6 +73,7 @@ func initialize():
 	wheel_moment = 0.5 * wheel_mass * pow(tire_radius, 2)
 	set_target_position(Vector3.DOWN * (spring_length + tire_radius))
 	vehicle = get_parent()
+	max_spring_length = spring_length
 
 func steer(input : float, max_steering_angle : float):
 	input *= steering_ratio
@@ -174,6 +176,11 @@ func process_suspension(opposite_compression : float, delta : float) -> float:
 	else:
 		spring_current_length = spring_length
 	
+	var no_contact := false
+	if spring_current_length > max_spring_length:
+		spring_current_length = max_spring_length
+		no_contact = true
+	
 	var bottom_out := false
 	if spring_current_length < 0.0:
 		spring_current_length = 0.0
@@ -212,6 +219,12 @@ func process_suspension(opposite_compression : float, delta : float) -> float:
 	spring_force += damping_force
 	
 	spring_force = maxf(0, spring_force + bottom_out_force)
+	
+	max_spring_length = clampf((((spring_force / wheel_mass) - spring_speed_mm_per_seconds) * delta * 0.001) + spring_current_length, 0.0, spring_length)
+
+	if no_contact:
+		spring_force = 0.0
+	
 	return compression
 
 func process_tires(braking : bool, delta : float):
@@ -233,6 +246,9 @@ func process_tires(braking : bool, delta : float):
 		max_y_force = absf(applied_torque / tire_radius)
 	else:
 		max_y_force = absf(needed_rolling_force / tire_radius)
+	
+	var max_x_force := 0.0
+	max_x_force = absf(mass_over_wheel * local_velocity.x) / delta
 	
 	var z_sign = signf(-local_velocity.z)
 	if local_velocity.z == 0.0:
@@ -266,6 +282,10 @@ func process_tires(braking : bool, delta : float):
 		limit_spin = true
 	else:
 		limit_spin = false
+	
+	if absf(force_vector.x) > max_x_force:
+		force_vector.x = max_x_force * signf(force_vector.x)
+	
 	force_vector.y -= process_rolling_resistance() * signf(local_velocity.z)
 
 func process_rolling_resistance() -> float:

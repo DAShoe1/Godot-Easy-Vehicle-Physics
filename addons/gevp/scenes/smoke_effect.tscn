@@ -1,0 +1,49 @@
+[gd_scene load_steps=9 format=3 uid="uid://h6vdpba71kpr"]
+
+[ext_resource type="Script" path="res://addons/gevp/scripts/wheel_smoke.gd" id="1_3e4qh"]
+
+[sub_resource type="Gradient" id="Gradient_wywko"]
+offsets = PackedFloat32Array(0, 0.772152, 1)
+colors = PackedColorArray(1, 1, 1, 0.501961, 1, 1, 1, 0.501961, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_5rs2r"]
+gradient = SubResource("Gradient_wywko")
+
+[sub_resource type="Curve" id="Curve_w4wou"]
+_data = [Vector2(0, 0.263736), 0.0, 3.06593, 0, 0, Vector2(1e-05, 0.274725), 2.35875, 2.35875, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_h3kqi"]
+curve = SubResource("Curve_w4wou")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_my0g6"]
+lifetime_randomness = 0.5
+direction = Vector3(0, 0, 0)
+spread = 0.0
+gravity = Vector3(0, 0.1, 0)
+damping_min = 0.5
+damping_max = 0.5
+attractor_interaction_enabled = false
+scale_min = 0.2
+scale_curve = SubResource("CurveTexture_h3kqi")
+color_ramp = SubResource("GradientTexture1D_5rs2r")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dkuso"]
+transparency = 1
+vertex_color_use_as_albedo = true
+albedo_color = Color(1, 1, 1, 0.501961)
+
+[sub_resource type="SphereMesh" id="SphereMesh_t2ioh"]
+material = SubResource("StandardMaterial3D_dkuso")
+radius = 1.0
+height = 2.0
+radial_segments = 8
+rings = 4
+
+[node name="Smoke" type="GPUParticles3D"]
+emitting = false
+amount = 100
+lifetime = 2.0
+process_material = SubResource("ParticleProcessMaterial_my0g6")
+draw_pass_1 = SubResource("SphereMesh_t2ioh")
+script = ExtResource("1_3e4qh")
