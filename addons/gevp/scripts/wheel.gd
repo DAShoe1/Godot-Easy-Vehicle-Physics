@@ -104,7 +104,10 @@ func process_torque(drive : float, drive_inertia : float, brake_torque : float, 
 	
 	## Applied torque is used to ensure the wheels don't apply more force
 	## than the motor or brakes applied to the wheel
-	applied_torque = absf(drive - (brake_torque * signf(spin)))
+	if is_zero_approx(spin):
+		applied_torque = absf(drive - brake_torque)
+	else:
+		applied_torque = absf(drive - (brake_torque * signf(spin)))
 	
 	## If braking and nearly stopped, just stop the wheel completely.
 	if absf(spin) < 5.0 and brake_torque > absf(net_torque):
