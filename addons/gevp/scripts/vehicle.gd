@@ -341,6 +341,7 @@ var rear_axle_position := Vector3.ZERO
 var delta_time := 0.0
 
 var vehicle_inertia : Vector3
+var current_gravity : Vector3
 
 class Axle:
 	var wheels := []
@@ -377,6 +378,9 @@ class Axle:
 
 func _ready():
 	initialize()
+
+func _integrate_forces(state : PhysicsDirectBodyState3D):
+	current_gravity = state.total_gravity
 
 func initialize():
 	center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
