@@ -80,6 +80,11 @@ func initialize():
 	set_target_position(Vector3.DOWN * (spring_length + tire_radius))
 	vehicle = get_parent()
 	max_spring_length = spring_length
+	current_cof = coefficient_of_friction[surface_type]
+	current_rolling_resistance = rolling_resistance[surface_type]
+	current_lateral_grip_assist = lateral_grip_assist[surface_type]
+	current_longitudinal_grip_ratio = longitudinal_grip_ratio[surface_type]
+	current_tire_stiffness = 1000000.0 + 8000000.0 * tire_stiffnesses[surface_type]
 
 func steer(input : float, max_steering_angle : float):
 	input *= steering_ratio

@@ -374,7 +374,6 @@ class Axle:
 		for wheel in wheels:
 			slip = maxf(slip, wheel.slip_vector.y)
 		return slip
-		
 
 func _ready():
 	initialize()
@@ -383,6 +382,29 @@ func _integrate_forces(state : PhysicsDirectBodyState3D):
 	current_gravity = state.total_gravity
 
 func initialize():
+	# Check to verify that surface types are provided
+	if tire_stiffnesses.size() == 0:
+		push_error("No surface types provided for tire stiffness")
+		return
+	
+	if coefficient_of_friction.size() == 0:
+		push_error("No surface types provided for coefficient of friction")
+		return
+	
+	if rolling_resistance.size() == 0:
+		push_error("No surface types provided in rolling resistance")
+		return
+	
+	if lateral_grip_assist.size() == 0:
+		push_error("No surface types provided in lateral grip assist")
+		return
+	
+	if longitudinal_grip_ratio.size() == 0:
+		push_error("No surface types provided in longitudinal grip ratio")
+		return
+	
+	var default_surface : String = tire_stiffnesses.keys()[0]
+	
 	center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
 	mass = vehicle_mass
 	var center_of_gravity := calculate_center_of_gravity(front_weight_distribution)
@@ -424,6 +446,7 @@ func initialize():
 	rear_axle.differential_lock_torque = rear_locking_differential_engage_torque
 	
 	for wheel in wheel_array:
+		wheel.surface_type = default_surface
 		wheel.tire_stiffnesses = tire_stiffnesses
 		wheel.contact_patch = contact_patch
 		wheel.braking_grip_multiplier = braking_grip_multiplier
