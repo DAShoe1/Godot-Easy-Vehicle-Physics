@@ -37,6 +37,7 @@ var mass_over_wheel := 0.0
 
 var wheel_moment := 0.0
 var spin := 0.0
+var spin_velocity_diff := 0.0
 var spring_force := 0.0
 var applied_torque := 0.0
 var local_velocity := Vector3.ZERO
@@ -59,6 +60,8 @@ var current_lateral_grip_assist := 0.0
 var current_longitudinal_grip_ratio := 0.0
 var current_tire_stiffness := 0.0
 var abs_enable_time := 0.0
+var abs_pulse_time := 0.3
+var abs_spin_difference_threshold := -12.0
 var limit_spin := false
 var is_driven := false
 var opposite_wheel : Wheel
@@ -102,10 +105,10 @@ func process_torque(drive : float, drive_inertia : float, brake_torque : float, 
 		abs = false
 	
 	## If the wheel slip from braking is too great, enable the antilock brakes
-	if absf(spin) > 5.0 and slip_vector.y > 0.5:
+	if absf(spin) > 5.0 and spin_velocity_diff < abs_spin_difference_threshold:
 		if abs and brake_torque > 0.0:
 			brake_torque = 0.0
-			abs_enable_time = vehicle.delta_time + 0.3
+			abs_enable_time = vehicle.delta_time + abs_pulse_time
 	
 	## Applied torque is used to ensure the wheels don't apply more force
 	## than the motor or brakes applied to the wheel
@@ -116,7 +119,10 @@ func process_torque(drive : float, drive_inertia : float, brake_torque : float, 
 	
 	## If braking and nearly stopped, just stop the wheel completely.
 	if absf(spin) < 5.0 and brake_torque > absf(net_torque):
-		spin = 0.0
+		if abs and absf(local_velocity.z) > 2.0:
+			abs_enable_time = vehicle.delta_time + abs_pulse_time
+		else:
+			spin = 0.0
 	else:
 		## Spin the wheel based on the provided torque. The tire forces will handle
 		## applying that force to the vehicle.
@@ -250,7 +256,7 @@ func process_tires(braking : bool, delta : float):
 	slip_vector.y = 0.0
 	
 	var wheel_velocity := spin * tire_radius
-	var spin_velocity_diff := wheel_velocity + local_velocity.z
+	spin_velocity_diff = wheel_velocity + local_velocity.z
 	var needed_rolling_force := ((spin_velocity_diff * wheel_moment) / tire_radius) / delta
 	var max_y_force := 0.0
 	

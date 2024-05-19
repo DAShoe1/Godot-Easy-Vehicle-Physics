@@ -58,6 +58,17 @@ extends RigidBody3D
 ## Values below 0 disable the effect.
 @export var traction_control_max_slip := 8.0
 
+@export_subgroup("Front Axle", "front_")
+## How long the ABS releases the brake when the spin threshold is crossed.
+@export var front_abs_pulse_time := 0.03
+## The difference in speed between the wheel and the surface to engage ABS.
+@export var front_abs_spin_difference_threshold := 12.0
+
+@export_subgroup("Rear Axle", "rear_")
+## How long the ABS releases the brake when the spin threshold is crossed.
+@export var rear_abs_pulse_time := 0.03
+## The difference in speed between the wheel and the surface to engage ABS.
+@export var rear_abs_spin_difference_threshold := 12.0
 
 @export_group("Stability")
 ## Stablity applies torque forces to the vehicle body when the body angle
@@ -474,6 +485,8 @@ func initialize():
 		wheel.fast_rebound = front_damping_rate * front_rebound_damp_multiplier * 0.5
 		wheel.bump_stop_multiplier = front_bump_stop_multiplier
 		wheel.mass_over_wheel = vehicle_mass * front_weight_distribution * 0.5
+		wheel.abs_pulse_time = front_abs_pulse_time
+		wheel.abs_spin_difference_threshold = -absf(front_abs_spin_difference_threshold)
 	
 	var rear_weight_per_wheel := vehicle_mass * (1.0 - front_weight_distribution) * 4.9
 	var rear_spring_rate := calculate_spring_rate(rear_weight_per_wheel, rear_spring_length, rear_resting_ratio)
@@ -493,6 +506,8 @@ func initialize():
 		wheel.fast_rebound = rear_damping_rate * rear_rebound_damp_multiplier * 0.5
 		wheel.bump_stop_multiplier = rear_bump_stop_multiplier
 		wheel.mass_over_wheel = vehicle_mass * (1.0 - front_weight_distribution) * 0.5
+		wheel.abs_pulse_time = rear_abs_pulse_time
+		wheel.abs_spin_difference_threshold = -absf(rear_abs_spin_difference_threshold)
 	
 	var wheel_base := rear_left_wheel.position.z - front_left_wheel.position.z
 	var front_track_width := front_right_wheel.position.x - front_left_wheel.position.x
