@@ -168,6 +168,11 @@ extends RigidBody3D
 ## with the height centered on the wheel raycast positions. This will offset
 ## the height from that calculated position.
 @export var center_of_gravity_height_offset := -0.2
+## Multiplies the calculated inertia by this value.
+## Greater inertia values will cause more force to be
+## required to rotate the car.
+@export var inertia_multiplier := 1.2
+
 @export_subgroup("Front Axle", "front_")
 ## The amount of suspension travel in meters.
 @export var front_spring_length := 0.15
@@ -296,11 +301,11 @@ extends RigidBody3D
 
 const ANGULAR_VELOCITY_TO_RPM := 60.0 / TAU
 
-var wheel_array := []
-var axles := []
+var wheel_array : Array[Wheel] = []
+var axles : Array[Axle] = []
 var front_axle : Axle
 var rear_axle : Axle
-var drive_wheels := []
+var drive_wheels : Array[Wheel] = []
 
 ## Controller Inputs: An external script should set these values
 var throttle_input := 0.0
@@ -355,7 +360,7 @@ var vehicle_inertia : Vector3
 var current_gravity : Vector3
 
 class Axle:
-	var wheels := []
+	var wheels : Array[Wheel] = []
 	var is_drive_axle := false
 	var inertia := 0.0
 	var handbrake := false
@@ -529,8 +534,8 @@ func initialize():
 	rear_right_wheel.toe = rear_toe
 	
 	if front_brake_bias < 0.0:
-		var front_axle_spring_force = calculate_axle_spring_force(0.6, front_spring_length, front_spring_rate)
-		var total_spring_froce = front_axle_spring_force + calculate_axle_spring_force(0.4, rear_spring_length, rear_spring_rate)
+		var front_axle_spring_force := calculate_axle_spring_force(0.6, front_spring_length, front_spring_rate)
+		var total_spring_froce := front_axle_spring_force + calculate_axle_spring_force(0.4, rear_spring_length, rear_spring_rate)
 		front_brake_bias = front_axle_spring_force / total_spring_froce
 	
 	front_axle.brake_bias = front_brake_bias
@@ -567,16 +572,17 @@ func initialize():
 	
 	is_ready = true
 
-func _physics_process(delta):
+func _physics_process(delta : float) -> void:
 	if not is_ready:
 		return
 	
 	## For stability calculations, we need the vehicle body inertia which isn't
 	## available immidiately
 	if not vehicle_inertia:
-		var rigidbody_inertia := PhysicsServer3D.body_get_direct_state(get_rid()).inverse_inertia.inverse()
+		var rigidbody_inertia := PhysicsServer3D.body_get_param(get_rid(), PhysicsServer3D.BODY_PARAM_INERTIA)
 		if rigidbody_inertia.is_finite():
-			vehicle_inertia = rigidbody_inertia
+			vehicle_inertia = rigidbody_inertia * inertia_multiplier
+			inertia = vehicle_inertia
 	
 	delta_time += delta
 	local_velocity = lerp(((global_transform.origin - previous_global_position) / delta) * global_transform.basis, local_velocity, 0.5)
@@ -594,12 +600,12 @@ func _physics_process(delta):
 	process_forces(delta)
 	process_stability()
 
-func process_drag():
-	var drag = 0.5 * air_density * pow(speed, 2.0) * frontal_area * coefficient_of_drag
+func process_drag() -> void:
+	var drag := 0.5 * air_density * pow(speed, 2.0) * frontal_area * coefficient_of_drag
 	if drag > 0.0:
 		apply_central_force(-local_velocity.normalized() * drag)
 
-func process_braking(delta : float):
+func process_braking(delta : float) -> void:
 	if (brake_input < brake_amount):
 		brake_amount -= braking_speed * delta
 		if (brake_input > brake_amount):
@@ -618,7 +624,7 @@ func process_braking(delta : float):
 	brake_force = brake_amount * max_brake_force
 	handbrake_force = handbrake_input * max_handbrake_force
 
-func process_steering(delta):
+func process_steering(delta : float) -> void:
 	var steer_assist_engaged := false
 	var steering_slip := get_max_steering_slip_angle()
 	
@@ -679,7 +685,7 @@ func process_steering(delta):
 	for wheel in wheel_array:
 		wheel.steer(steering_adjust + steer_correction, max_steering_angle)
 
-func process_throttle(delta : float):
+func process_throttle(delta : float) -> void:
 	var throttle_delta := throttle_speed * delta
 	
 	if (throttle_input < throttle_amount):
@@ -702,7 +708,7 @@ func process_throttle(delta : float):
 	else:
 		clutch_amount = clutch_input
 
-func process_motor(delta : float):
+func process_motor(delta : float) -> void:
 	var drag_torque := motor_rpm * motor_drag
 	torque_output = get_torque_at_rpm(motor_rpm) * throttle_amount
 	## Adjust torque based on throttle input, clutch input, and motor drag
@@ -772,7 +778,7 @@ func process_clutch(delta : float):
 	
 	motor_rpm = new_rpm
 
-func process_transmission(delta : float):
+func process_transmission(delta : float) -> void:
 	if is_shifting:
 		if delta_time > complete_shift_delta_time:
 			complete_shift()
@@ -788,7 +794,7 @@ func process_transmission(delta : float):
 		var drivetrain_spin := get_drivetrain_spin()
 		var real_wheel_spin := drivetrain_spin * get_gear_ratio(current_gear)
 		var current_ideal_gear_rpm := gear_ratios[current_gear - 1] * final_drive * ideal_wheel_spin * ANGULAR_VELOCITY_TO_RPM
-		var current_real_gear_rpm = real_wheel_spin * ANGULAR_VELOCITY_TO_RPM
+		var current_real_gear_rpm := real_wheel_spin * ANGULAR_VELOCITY_TO_RPM
 		
 		if current_gear == -1:
 			reversing = true
@@ -827,10 +833,10 @@ func process_transmission(delta : float):
 					if delta_time - last_shift_delta_time > shift_time:
 						shift(1)
 
-func process_drive(delta : float):
+func process_drive(delta : float) -> void:
 	var current_gear_ratio := get_gear_ratio(current_gear)
 	var drive_torque := 0.0
-	var drive_inertia = motor_moment + pow(abs(current_gear_ratio), 2) * gear_inertia
+	var drive_inertia := motor_moment + pow(current_gear_ratio, 2) * gear_inertia
 	var max_drive_torque := 0.0
 	var is_slipping := get_is_a_wheel_slipping()
 	
@@ -840,9 +846,9 @@ func process_drive(delta : float):
 	## Check for slip and adjust variable torque split
 	if variable_torque_split:
 		if is_slipping and throttle_amount > 0.1:
-			current_torque_split = clamp(current_torque_split + (delta / variable_split_speed), 0.0, 1.0)
+			current_torque_split = clampf(current_torque_split + (delta / variable_split_speed), 0.0, 1.0)
 		else:
-			current_torque_split = clamp(current_torque_split - (delta / variable_split_speed), 0.0, 1.0)
+			current_torque_split = clampf(current_torque_split - (delta / variable_split_speed), 0.0, 1.0)
 	
 	## Same formula to keep the motor and drivetrain couple, but to keep the front and rear axles
 	## coupled. Modified to allow for a torque split.
@@ -863,7 +869,7 @@ func process_drive(delta : float):
 	process_axle_drive(axle_b, transfer_torque, drive_inertia, delta)
 	process_axle_drive(axle_a, transfer_torque_2, drive_inertia, delta)
 
-func process_axle_drive(axle : Axle, torque : float, drive_inertia : float, delta : float):
+func process_axle_drive(axle : Axle, torque : float, drive_inertia : float, delta : float) -> void:
 	if not axle.is_drive_axle:
 		torque = 0.0
 		drive_inertia = 0.0
@@ -891,29 +897,29 @@ func process_axle_drive(axle : Axle, torque : float, drive_inertia : float, delt
 			axle.rotation_split = minf(axle.rotation_split, right_reaction_torque_ratio)
 	
 	var rotation_sum := 0.0
-	var split = (axle.rotation_split + 1.0) * 0.5
+	var split := (axle.rotation_split + 1.0) * 0.5
 	axle.applied_split = axle.rotation_split
 	rotation_sum += axle.wheels[0].process_torque(torque * split, drive_inertia, brake_force * 0.5 * axle.brake_bias, abs, delta)
 	rotation_sum += axle.wheels[1].process_torque(torque * (1.0 - split), drive_inertia, brake_force * 0.5 * axle.brake_bias, abs, delta)
-	axle.rotation_split = clamp(rotation_sum, -1.0, 1.0)
+	axle.rotation_split = clampf(rotation_sum, -1.0, 1.0)
 
-func process_forces(delta : float):
+func process_forces(delta : float) -> void:
 	## Spring compression values are kept for antiroll bar calculations
 	for axle in axles:
 		var previous_compression_left : float = axle.suspension_compression_left
 		axle.suspension_compression_left = axle.wheels[0].process_forces(axle.suspension_compression_right, is_braking, delta)
 		axle.suspension_compression_right = axle.wheels[1].process_forces(previous_compression_left, is_braking, delta)
 
-func process_stability():
+func process_stability() -> void:
 	var is_stability_on := false
 	## Calculates the angle of the vehicle in relation to the direction of travel
 	## and applies necessary stabilizing forces.
 	if enable_stability:
 		stability_yaw_torque = 0.0
-		var plane_xz = Vector2(local_velocity.x, local_velocity.z)
+		var plane_xz := Vector2(local_velocity.x, local_velocity.z)
 		if plane_xz.y < 0 and plane_xz.length() > 1.0:
 			plane_xz = plane_xz.normalized()
-			var yaw_angle = 1.0 - absf(plane_xz.dot(Vector2.UP))
+			var yaw_angle := 1.0 - absf(plane_xz.dot(Vector2.UP))
 			if yaw_angle > stability_yaw_engage_angle and signf(angular_velocity.y) == signf(plane_xz.x):
 				stability_yaw_torque = (yaw_angle - stability_yaw_engage_angle) * stability_yaw_strength
 				stability_yaw_torque *= vehicle_inertia.y * clampf(absf(angular_velocity.y) - 0.5, 0.0, 1.0)
@@ -932,11 +938,11 @@ func process_stability():
 	
 	stability_active = is_stability_on
 
-func manual_shift(count : int):
+func manual_shift(count : int) -> void:
 	if not automatic_transmission:
 		shift(count)
 
-func shift(count : int):
+func shift(count : int) -> void:
 	if is_shifting:
 		return
 	
@@ -953,7 +959,7 @@ func shift(count : int):
 			if count > 0:
 				is_up_shifting = true
 
-func complete_shift():
+func complete_shift() -> void:
 	## Called when it is time to complete a shift in progress
 	if current_gear == -1:
 		brake_amount = 0.0
@@ -1022,7 +1028,7 @@ func calculate_average_tire_friction(weight : float, surface : String) -> float:
 		friction += wheel.get_friction(weight / wheel_array.size(), surface)
 	return friction
 
-func calculate_brake_force():
+func calculate_brake_force() -> void:
 	var friction := calculate_average_tire_friction(vehicle_mass * 9.8, "Road")
 	max_brake_force = ((friction * braking_grip_multiplier) * average_drive_wheel_radius) / wheel_array.size()
 	max_handbrake_force = ((friction * braking_grip_multiplier * 0.05) / average_drive_wheel_radius)

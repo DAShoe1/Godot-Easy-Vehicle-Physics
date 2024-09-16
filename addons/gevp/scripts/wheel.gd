@@ -69,15 +69,15 @@ var beam_axle := 0.0
 
 var vehicle : Vehicle
 
-func _process(delta):
+func _process(delta : float) -> void:
 	if wheel_node:
-		wheel_node.position.y = min(0, -spring_current_length)
+		wheel_node.position.y = minf(0.0, -spring_current_length)
 		if not is_zero_approx(beam_axle):
 			var wheel_lookat_vector := (opposite_wheel.transform * opposite_wheel.wheel_node.position) - (transform * wheel_node.position)
 			wheel_node.rotation.z = wheel_lookat_vector.angle_to(Vector3.RIGHT * beam_axle) * signf(wheel_lookat_vector.y * beam_axle)
 		wheel_node.rotation.x -= (wrapf(spin * delta, 0, TAU))
 		
-func initialize():
+func initialize() -> void:
 	wheel_node.rotation_order = EULER_ORDER_ZXY
 	wheel_moment = 0.5 * wheel_mass * pow(tire_radius, 2)
 	set_target_position(Vector3.DOWN * (spring_length + tire_radius))
@@ -95,7 +95,7 @@ func steer(input : float, max_steering_angle : float):
 
 func process_torque(drive : float, drive_inertia : float, brake_torque : float, abs : bool, delta : float) -> float:
 	## Add the torque the wheel produced last frame from surface friction
-	var net_torque = force_vector.y * tire_radius
+	var net_torque := force_vector.y * tire_radius
 	var previous_spin := spin
 	net_torque += drive
 	
@@ -138,7 +138,7 @@ func process_torque(drive : float, drive_inertia : float, brake_torque : float, 
 	else:
 		return (spin - previous_spin) * (wheel_moment + drive_inertia) / (drive * delta)
 
-func process_forces(opposite_compression : float, braking : bool, delta : float):
+func process_forces(opposite_compression : float, braking : bool, delta : float) -> float:
 	force_raycast_update()
 	previous_velocity = local_velocity
 	local_velocity = (global_position - previous_global_position) / delta * global_transform.basis
@@ -165,7 +165,7 @@ func process_forces(opposite_compression : float, braking : bool, delta : float)
 	
 	if is_colliding() and last_collider:
 		process_tires(braking, delta)
-		var contact = last_collision_point - vehicle.global_position
+		var contact := last_collision_point - vehicle.global_position
 		if spring_force > 0.0:
 			vehicle.apply_force(last_collision_normal * spring_force, contact)
 		else:
@@ -271,7 +271,7 @@ func process_tires(braking : bool, delta : float):
 	var max_x_force := 0.0
 	max_x_force = absf(mass_over_wheel * local_velocity.x) / delta
 	
-	var z_sign = signf(-local_velocity.z)
+	var z_sign := signf(-local_velocity.z)
 	if local_velocity.z == 0.0:
 		z_sign = 1.0
 	
@@ -280,26 +280,26 @@ func process_tires(braking : bool, delta : float):
 	if slip_vector.is_zero_approx():
 		slip_vector = Vector2(0.0001, 0.0001)
 	
-	var cornering_stiffness = 0.5 * current_tire_stiffness * pow(contact_patch, 2.0)
-	var friction = current_cof * spring_force - (spring_force / (tire_width * contact_patch * 0.2))
-	var deflect = 1.0 / (sqrt(pow(cornering_stiffness * slip_vector.y, 2.0) + pow(cornering_stiffness * slip_vector.x, 2.0)))
+	var cornering_stiffness := 0.5 * current_tire_stiffness * pow(contact_patch, 2.0)
+	var friction := current_cof * spring_force - (spring_force / (tire_width * contact_patch * 0.2))
+	var deflect := 1.0 / (sqrt(pow(cornering_stiffness * slip_vector.y, 2.0) + pow(cornering_stiffness * slip_vector.x, 2.0)))
 	
 	## Adds in additional longitudinal grip when braking
-	var braking_help = 1
+	var braking_help := 1.0
 	if slip_vector.y > 0.3 and braking:
 		braking_help = (1 + (braking_grip_multiplier * clampf(absf(slip_vector.y), 0.0, 1.0)))
 	
-	var crit_length = friction * (1.0 - slip_vector.y) * contact_patch * (0.5 * deflect)
+	var crit_length := friction * (1.0 - slip_vector.y) * contact_patch * (0.5 * deflect)
 	if crit_length >= contact_patch:
 		force_vector.y = cornering_stiffness * slip_vector.y / (1.0 - slip_vector.y)
 		force_vector.x = cornering_stiffness * slip_vector.x / (1.0 - slip_vector.y)
 	else:
-		var brushx = (1.0 - friction * (1.0 - slip_vector.y) * (0.25 * deflect)) * deflect
+		var brushx := (1.0 - friction * (1.0 - slip_vector.y) * (0.25 * deflect)) * deflect
 		force_vector.y = friction * current_longitudinal_grip_ratio * cornering_stiffness * slip_vector.y * brushx * braking_help * z_sign
-		force_vector.x = friction * cornering_stiffness * slip_vector.x * brushx * (abs(slip_vector.x * current_lateral_grip_assist) + 1.0)
+		force_vector.x = friction * cornering_stiffness * slip_vector.x * brushx * (absf(slip_vector.x * current_lateral_grip_assist) + 1.0)
 	
 	if absf(force_vector.y) > absf(max_y_force):
-		force_vector.y = max_y_force * sign(force_vector.y)
+		force_vector.y = max_y_force * signf(force_vector.y)
 		limit_spin = true
 	else:
 		limit_spin = false
@@ -310,14 +310,14 @@ func process_tires(braking : bool, delta : float):
 	force_vector.y -= process_rolling_resistance() * signf(local_velocity.z)
 
 func process_rolling_resistance() -> float:
-	var rolling_resistance_coefficient = 0.005 + (0.5 * (0.01 + (0.0095 * pow(local_velocity.z * 0.036, 2))))
+	var rolling_resistance_coefficient := 0.005 + (0.5 * (0.01 + (0.0095 * pow(local_velocity.z * 0.036, 2))))
 	return rolling_resistance_coefficient * spring_force * current_rolling_resistance
 
 func get_reaction_torque() -> float:
 	return force_vector.y * tire_radius
 
 func get_friction(normal_force : float, surface : String) -> float:
-	var surface_cof = 1.0
+	var surface_cof := 1.0
 	if coefficient_of_friction.has(surface):
 		surface_cof = coefficient_of_friction[surface]
 	return surface_cof * normal_force - (normal_force / (tire_width * contact_patch * 0.2))

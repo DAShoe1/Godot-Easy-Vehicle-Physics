@@ -42,3 +42,7 @@ This controller works well in both the Godot and Jolt physics engines. A physics
 ## Acknowledgments
 Huge thanks to Dechode and Wolfe for sharing their projects to the Godot community. Sharing this project is my way of paying it forward. Portions of this code are based on [Dechode's Godot Advanced Vehicle](https://github.com/Dechode/Godot-Advanced-Vehicle) and [SERIES: Driving Simulator Workshop](https://lupine-vidya.itch.io/gdsim/devlog/677572/series-driving-simulator-workshop-mirror) and attribution is included in the appropriate source files.
 The car model provided as a demo is from [Kenney.nl Car Kit](https://www.kenney.nl/assets/car-kit)
+
+## Projects using Godot Easy Vehicle Physics
+If you are working on a project using this add-on and want to list it here, open an issue to let me know.
+- [Jack of all Cars](https://dashoe1.itch.io/jack-of-all-cars)
