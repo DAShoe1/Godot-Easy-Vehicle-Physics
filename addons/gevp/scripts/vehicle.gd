@@ -579,7 +579,7 @@ func _physics_process(delta : float) -> void:
 	## For stability calculations, we need the vehicle body inertia which isn't
 	## available immidiately
 	if not vehicle_inertia:
-		var rigidbody_inertia := PhysicsServer3D.body_get_param(get_rid(), PhysicsServer3D.BODY_PARAM_INERTIA)
+		var rigidbody_inertia := PhysicsServer3D.body_get_direct_state(get_rid()).inverse_inertia.inverse()
 		if rigidbody_inertia.is_finite():
 			vehicle_inertia = rigidbody_inertia * inertia_multiplier
 			inertia = vehicle_inertia
