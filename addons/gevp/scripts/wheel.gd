@@ -233,9 +233,9 @@ func process_suspension(opposite_compression : float, delta : float) -> float:
 			damping_force = spring_speed_mm_per_seconds * (slow_bump + bottom_out_damping)
 	else :
 		if spring_speed_mm_per_seconds < -fast_damp_threshold:
-			damping_force = spring_speed_mm_per_seconds * slow_rebound
-		else:
 			damping_force = spring_speed_mm_per_seconds * fast_rebound
+		else:
+			damping_force = spring_speed_mm_per_seconds * slow_rebound
 	
 	spring_force += damping_force
 	
