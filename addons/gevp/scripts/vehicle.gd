@@ -5,10 +5,20 @@ class_name Vehicle
 extends RigidBody3D
 
 @export_group("Wheel Nodes")
-@export var front_left_wheel : Wheel
-@export var front_right_wheel : Wheel
-@export var rear_left_wheel : Wheel
-@export var rear_right_wheel : Wheel
+## Assign this to the Wheel [RayCast3D] that is this vehicle's front left wheel.
+# @export var front_left_wheel : Wheel
+## Assign this to the Wheel [RayCast3D] that is this vehicle's front right wheel.
+# @export var front_right_wheel : Wheel
+## Assign this to the Wheel [RayCast3D] that is this vehicle's rear left wheel.
+# @export var rear_left_wheel : Wheel
+## Assign this to the Wheel [RayCast3D] that is this vehicle's rear right wheel.
+# @export var rear_right_wheel : Wheel
+
+## A list of wheels ([RayCast3D]s) that the vehicle has.
+## [br][br]
+## Each wheel can be a front wheel or a rear wheel, which slightly alters
+## their properties.
+@export var wheel_nodes: Array[Wheel] = [null, null, null, null]
 
 @export_group("Steering")
 ## The rate the steering input changes to smooth input.
@@ -429,30 +439,38 @@ func initialize():
 	max_clutch_torque = max_torque * max_clutch_torque_ratio
 	
 	front_axle = Axle.new()
-	front_axle.wheels.append(front_left_wheel)
-	front_axle.wheels.append(front_right_wheel)
-	front_axle.torque_vectoring = front_torque_vectoring
-	front_left_wheel.opposite_wheel = front_right_wheel
-	front_left_wheel.beam_axle = 1.0 if front_beam_axle else 0.0
-	front_right_wheel.opposite_wheel = front_left_wheel
-	front_right_wheel.beam_axle = -1.0 if front_beam_axle else 0.0
 	rear_axle = Axle.new()
-	rear_axle.wheels.append(rear_left_wheel)
-	rear_axle.wheels.append(rear_right_wheel)
+
+	front_axle.torque_vectoring = front_torque_vectoring
+
+	for wheel in wheel_nodes:
+
+		if wheel.front_wheel: front_axle.wheels.append(wheel)
+		else: rear_axle.wheels.append(wheel)
+			
+		if not wheel.left_or_right_side_wheel: # All Left wheels
+			wheel.beam_axle = 1.0 if front_beam_axle else 0.0
+		
+		else: # All Right wheels
+			wheel.beam_axle = -1.0 if front_beam_axle else 0.0
+
+	# front_left_wheel.opposite_wheel = front_right_wheel
+	# front_left_wheel.beam_axle = 1.0 if front_beam_axle else 0.0
+	# front_right_wheel.opposite_wheel = front_left_wheel
+	# front_right_wheel.beam_axle = -1.0 if front_beam_axle else 0.0
+
 	rear_axle.torque_vectoring = rear_torque_vectoring
-	rear_left_wheel.opposite_wheel = rear_right_wheel
-	rear_left_wheel.beam_axle = 1.0 if rear_beam_axle else 0.0
-	rear_right_wheel.opposite_wheel = rear_left_wheel
-	rear_right_wheel.beam_axle = -1.0 if rear_beam_axle else 0.0
 	rear_axle.handbrake = true
 	
 	axles.append(front_axle)
 	axles.append(rear_axle)
 	
-	wheel_array.append(front_left_wheel)
-	wheel_array.append(front_right_wheel)
-	wheel_array.append(rear_left_wheel)
-	wheel_array.append(rear_right_wheel)
+	# wheel_array.append(front_left_wheel)
+	# wheel_array.append(front_right_wheel)
+	# wheel_array.append(rear_left_wheel)
+	# wheel_array.append(rear_right_wheel)
+
+	for wheel in wheel_nodes: wheel_array.append(wheel)
 	
 	var max_tire_radius := maxf(front_tire_radius, rear_tire_radius)
 	front_axle.tire_size_correction = max_tire_radius / front_tire_radius
@@ -514,24 +532,75 @@ func initialize():
 		wheel.abs_pulse_time = rear_abs_pulse_time
 		wheel.abs_spin_difference_threshold = -absf(rear_abs_spin_difference_threshold)
 	
-	var wheel_base := rear_left_wheel.position.z - front_left_wheel.position.z
-	var front_track_width := front_right_wheel.position.x - front_left_wheel.position.x
+	# var wheel_base := rear_left_wheel.position.z - front_left_wheel.position.z
+	# var front_track_width := front_right_wheel.position.x - front_left_wheel.position.x
+	# var rear_track_width := rear_right_wheel.position.x - rear_left_wheel.position.x
+	var wheel_base: float
+	var front_track_width: float
+	var rear_track_width: float
+
+	for wheel in wheel_nodes:
+
+		if not wheel.left_or_right_side_wheel: # left wheels
+
+			if wheel.front_wheel: # front left wheels
+				wheel_base -= wheel.position.z
+				front_track_width -= wheel.position.x
+
+			else: # rear left wheels
+				wheel_base += wheel.position.z
+				rear_track_width -= wheel.position.x
+
+		else: # right wheels
+
+			if wheel.front_wheel: # front right wheels
+				front_track_width += wheel.position.x
+
+			else: # rear right wheels
+				
+				rear_track_width += wheel.position.x
+	
 	var front_ackermann := (atan((wheel_base * tan(max_steering_angle)) / (wheel_base - (front_track_width * 0.5 * tan(max_steering_angle)))) / max_steering_angle) - 1.0
-	var rear_track_width := rear_right_wheel.position.x - rear_left_wheel.position.x
 	var rear_ackermann := (atan((wheel_base * tan(max_steering_angle)) / (wheel_base - (rear_track_width * 0.5 * tan(max_steering_angle)))) / max_steering_angle) - 1.0
 	
-	front_left_wheel.ackermann = front_ackermann
-	front_left_wheel.rotation.z = -front_camber
-	front_left_wheel.toe = -front_toe
-	front_right_wheel.ackermann = -front_ackermann
-	front_right_wheel.rotation.z = front_camber
-	front_right_wheel.toe = front_toe
-	rear_left_wheel.ackermann = rear_ackermann
-	rear_left_wheel.rotation.z = -rear_camber
-	rear_left_wheel.toe = -rear_toe
-	rear_right_wheel.ackermann = -rear_ackermann
-	rear_right_wheel.rotation.z = rear_camber
-	rear_right_wheel.toe = rear_toe
+	for wheel in wheel_nodes:
+
+		if wheel.front_wheel:
+
+			if not wheel.left_or_right_side_wheel: # front left wheels
+				wheel.ackermann = front_ackermann
+				wheel.rotation.z = -front_camber
+				wheel.toe = -front_toe
+			
+			else: # front right wheels
+				wheel.ackermann = -front_ackermann
+				wheel.rotation.z = front_camber
+				wheel.toe = front_toe
+		
+		else:
+
+			if not wheel.left_or_right_side_wheel: # rear left wheels
+				wheel.ackermann = rear_ackermann
+				wheel.rotation.z = -rear_camber
+				wheel.toe = -rear_toe
+
+			else: # rear right wheels
+				wheel.ackermann = -rear_ackermann
+				wheel.rotation.z = rear_camber
+				wheel.toe = rear_toe
+
+	# front_left_wheel.ackermann = front_ackermann
+	# front_left_wheel.rotation.z = -front_camber
+	# front_left_wheel.toe = -front_toe
+	# front_right_wheel.ackermann = -front_ackermann
+	# front_right_wheel.rotation.z = front_camber
+	# front_right_wheel.toe = front_toe
+	# rear_left_wheel.ackermann = rear_ackermann
+	# rear_left_wheel.rotation.z = -rear_camber
+	# rear_left_wheel.toe = -rear_toe
+	# rear_right_wheel.ackermann = -rear_ackermann
+	# rear_right_wheel.rotation.z = rear_camber
+	# rear_right_wheel.toe = rear_toe
 	
 	if front_brake_bias < 0.0:
 		var front_axle_spring_force := calculate_axle_spring_force(0.6, front_spring_length, front_spring_rate)
@@ -1034,8 +1103,48 @@ func calculate_brake_force() -> void:
 	max_handbrake_force = ((friction * braking_grip_multiplier * 0.05) / average_drive_wheel_radius)
 
 func calculate_center_of_gravity(front_distribution : float) -> Vector3:
-	front_axle_position = front_left_wheel.position.lerp(front_right_wheel.position, 0.5)
-	rear_axle_position = rear_left_wheel.position.lerp(rear_right_wheel.position, 0.5)
+
+	# front_axle_position = front_left_wheel.position.lerp(front_right_wheel.position, 0.5)
+	# rear_axle_position = rear_left_wheel.position.lerp(rear_right_wheel.position, 0.5)
+
+	# get mean averages of all wheels to use for getting
+	# front_axle_position and rear_axle_position
+	# there may be a better way to Do this but this should
+	# work either way
+
+	var mean_front_left_wheels:   Vector3
+	var index_front_left_wheels:  int
+
+	var mean_front_right_wheels:  Vector3
+	var index_front_right_wheels: int
+
+	var mean_rear_left_wheels:    Vector3
+	var index_rear_left_wheels:   int
+
+	var mean_rear_right_wheels:   Vector3
+	var index_rear_right_wheels:  int
+
+	for wheel in wheel_nodes:
+
+		if wheel.front_wheel:
+
+			if not wheel.left_or_right_side_wheel: # front left
+				mean_front_left_wheels += wheel.position
+				index_front_left_wheels += 1
+			else: # front right
+				mean_front_right_wheels += wheel.position
+				index_front_right_wheels += 1
+		
+		else:
+
+			if not wheel.left_or_right_side_wheel: # rear left
+				mean_rear_left_wheels += wheel.position
+				index_rear_left_wheels += 1
+			else: # rear right
+				mean_rear_right_wheels += wheel.position
+				index_rear_right_wheels += 1
+
+		
 	return lerp(rear_axle_position, front_axle_position, front_distribution)
 
 func calculate_spring_rate(weight : float, spring_length : float, resting_ratio : float) -> float:

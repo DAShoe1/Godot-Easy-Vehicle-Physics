@@ -9,6 +9,28 @@ extends RayCast3D
 
 @export var wheel_node : Node3D
 
+## If [code]true[/code], this Wheel is a front wheel, which gives it
+## special properties defined in this Wheel's parent Vehicle,
+## one of which is usually the ability to steer.
+@export var front_wheel: bool = false
+
+## The wheel horizontally opposite to this Wheel,
+## that is, if this is the front left wheel, this wheel's
+## [member opposite_wheel] would be the front right wheel.
+## [br][br]
+## [b]For the best physics, makes sure this is set
+## correctly for every wheel possible.[/b]
+@export var opposite_wheel: Wheel
+
+## If [code]true[/code], this wheel is on the right side of the vehicle,
+## which alters the way its physics are handled.
+## [br]Else, if [code]false[/code], this wheel is on the left side of
+## the vehicle, which also alters the way its physics are handled.
+## [br][br]
+## [b]For the best physics, makes sure this is set
+## correctly for every wheel possible.[/b]
+@export var left_or_right_side_wheel: bool = false
+
 var wheel_mass := 15.0
 var tire_radius := 0.3
 var tire_width := 205.0
@@ -64,7 +86,7 @@ var abs_pulse_time := 0.3
 var abs_spin_difference_threshold := -12.0
 var limit_spin := false
 var is_driven := false
-var opposite_wheel : Wheel
+# var opposite_wheel : Wheel
 var beam_axle := 0.0
 
 var vehicle : Vehicle

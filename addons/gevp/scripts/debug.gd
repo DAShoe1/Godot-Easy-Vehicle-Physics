@@ -83,10 +83,28 @@ func _process(delta):
 	if debug_sets[current_debug_set] == "Drivetrain" or debug_sets[current_debug_set] == "All":
 		debug_ui.draw_debug_line("front_torque", center_axle, (front_axle - center_axle) * vehicle.true_torque_split , Color.ORANGE)
 		debug_ui.draw_debug_line("rear_torque", center_axle, (rear_axle - center_axle) * (1.0 - vehicle.true_torque_split) , Color.ORANGE)
-		debug_ui.draw_debug_line("fl_split", front_axle, (vehicle.front_left_wheel.global_position - front_axle) * ((vehicle.front_axle.applied_split + 1.0) * 0.5) * vehicle.true_torque_split, Color.ORANGE)
-		debug_ui.draw_debug_line("fr_split", front_axle, (vehicle.front_right_wheel.global_position - front_axle) * (1.0 - ((vehicle.front_axle.applied_split + 1.0) * 0.5)) * vehicle.true_torque_split, Color.ORANGE)
-		debug_ui.draw_debug_line("rl_split", rear_axle, (vehicle.rear_left_wheel.global_position - rear_axle) * ((vehicle.rear_axle.applied_split + 1.0) * 0.5) * (1.0 - vehicle.true_torque_split), Color.ORANGE)
-		debug_ui.draw_debug_line("rr_split", rear_axle, (vehicle.rear_right_wheel.global_position - rear_axle) * (1.0 - ((vehicle.rear_axle.applied_split + 1.0) * 0.5)) * (1.0 - vehicle.true_torque_split), Color.ORANGE)
+
+		for wheel in vehicle.wheel_nodes:
+
+			if wheel.front_wheel:
+
+				if not wheel.left_or_right_side_wheel: # front left wheels
+
+					debug_ui.draw_debug_line("fl_split", front_axle, (wheel.global_position - front_axle) * ((vehicle.front_axle.applied_split + 1.0) * 0.5) * vehicle.true_torque_split, Color.ORANGE)
+				
+				else: # front right wheels
+
+					debug_ui.draw_debug_line("fr_split", front_axle, (wheel.global_position - front_axle) * (1.0 - ((vehicle.front_axle.applied_split + 1.0) * 0.5)) * vehicle.true_torque_split, Color.ORANGE)
+			
+			else:
+
+				if not wheel.left_or_right_side_wheel: # rear left wheels
+
+					debug_ui.draw_debug_line("rl_split", rear_axle, (wheel.global_position - rear_axle) * ((vehicle.rear_axle.applied_split + 1.0) * 0.5) * (1.0 - vehicle.true_torque_split), Color.ORANGE)
+				
+				else: # rear right wheels
+
+					debug_ui.draw_debug_line("rr_split", rear_axle, (wheel.global_position - rear_axle) * (1.0 - ((vehicle.rear_axle.applied_split + 1.0) * 0.5)) * (1.0 - vehicle.true_torque_split), Color.ORANGE)
 	
 	if debug_sets[current_debug_set] == "Stability" or debug_sets[current_debug_set] == "All":
 		var normalized_vector := vehicle.stability_torque_vector.normalized()
