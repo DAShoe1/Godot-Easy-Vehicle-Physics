@@ -437,22 +437,25 @@ func initialize():
 
 	for wheel in wheel_nodes:
 
-		if wheel.front_wheel: front_axle.wheels.append(wheel)
-		else: rear_axle.wheels.append(wheel)
+		if wheel.front_wheel: 
 			
-		if not wheel.left_or_right_side_wheel: # All Left wheels
-			wheel.beam_axle = 1.0 if front_beam_axle else 0.0
+			front_axle.wheels.append(wheel)
 		
-		else: # All Right wheels
-			wheel.beam_axle = -1.0 if front_beam_axle else 0.0
+			if not wheel.left_or_right_side_wheel: # Front left wheels
+				wheel.beam_axle = 1.0 if front_beam_axle else 0.0
+			
+			else: # Front right wheels
+				wheel.beam_axle = -1.0 if front_beam_axle else 0.0
+		
+		else: rear_axle.wheels.append(wheel)
 
+		wheel_array.append(wheel)
+			
 	rear_axle.torque_vectoring = rear_torque_vectoring
 	rear_axle.handbrake = true
 	
 	axles.append(front_axle)
 	axles.append(rear_axle)
-
-	for wheel in wheel_nodes: wheel_array.append(wheel)
 	
 	var max_tire_radius := maxf(front_tire_radius, rear_tire_radius)
 	front_axle.tire_size_correction = max_tire_radius / front_tire_radius
@@ -1069,10 +1072,7 @@ func calculate_brake_force() -> void:
 	max_handbrake_force = ((friction * braking_grip_multiplier * 0.05) / average_drive_wheel_radius)
 
 func calculate_center_of_gravity(front_distribution : float) -> Vector3:
-
-	# front_axle_position = front_left_wheel.position.lerp(front_right_wheel.position, 0.5)
-	# rear_axle_position = rear_left_wheel.position.lerp(rear_right_wheel.position, 0.5)
-
+	
 	# get mean averages of all wheels to use for getting
 	# front_axle_position and rear_axle_position
 	# there may be a better way to Do this but this should
@@ -1109,7 +1109,18 @@ func calculate_center_of_gravity(front_distribution : float) -> Vector3:
 			else: # rear right
 				mean_rear_right_wheels += wheel.position
 				index_rear_right_wheels += 1
+		
+	# get mean
 
+	mean_front_left_wheels /= index_front_left_wheels
+	mean_front_right_wheels /= index_front_right_wheels
+	mean_rear_left_wheels /= index_rear_left_wheels
+	mean_rear_right_wheels /= index_rear_right_wheels
+
+	# use these means as effective axle positions
+
+	front_axle_position = mean_front_left_wheels.lerp(mean_front_right_wheels, 0.5)
+	rear_axle_position = mean_rear_left_wheels.lerp(mean_rear_right_wheels, 0.5)
 		
 	return lerp(rear_axle_position, front_axle_position, front_distribution)
 
