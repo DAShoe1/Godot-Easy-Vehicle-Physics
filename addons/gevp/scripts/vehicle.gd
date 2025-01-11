@@ -160,8 +160,6 @@ extends RigidBody3D
 
 
 @export_group("Suspension")
-## Vehicle mass in kilograms.
-@export var vehicle_mass := 1500.0
 ## The percentage of the vehicle mass over the front axle.
 @export var front_weight_distribution := 0.5
 ## The center of gravity is calculated from the front weight distribution
@@ -422,7 +420,6 @@ func initialize():
 	var default_surface : String = tire_stiffnesses.keys()[0]
 	
 	center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
-	mass = vehicle_mass
 	var center_of_gravity := calculate_center_of_gravity(front_weight_distribution)
 	center_of_gravity.y += center_of_gravity_height_offset
 	center_of_mass = center_of_gravity
@@ -472,7 +469,7 @@ func initialize():
 		wheel.longitudinal_grip_ratio = longitudinal_grip_ratio
 		wheel.wheel_to_body_torque_multiplier = wheel_to_body_torque_multiplier
 	
-	var front_weight_per_wheel := vehicle_mass * front_weight_distribution * 4.9
+	var front_weight_per_wheel := mass * front_weight_distribution * 4.9
 	var front_spring_rate := calculate_spring_rate(front_weight_per_wheel, front_spring_length, front_resting_ratio)
 	var front_damping_rate := calculate_damping(front_weight_per_wheel, front_spring_rate, front_damping_ratio)
 	
@@ -489,11 +486,11 @@ func initialize():
 		wheel.fast_bump = front_damping_rate * front_bump_damp_multiplier * 0.5
 		wheel.fast_rebound = front_damping_rate * front_rebound_damp_multiplier * 0.5
 		wheel.bump_stop_multiplier = front_bump_stop_multiplier
-		wheel.mass_over_wheel = vehicle_mass * front_weight_distribution * 0.5
+		wheel.mass_over_wheel = mass * front_weight_distribution * 0.5
 		wheel.abs_pulse_time = front_abs_pulse_time
 		wheel.abs_spin_difference_threshold = -absf(front_abs_spin_difference_threshold)
 	
-	var rear_weight_per_wheel := vehicle_mass * (1.0 - front_weight_distribution) * 4.9
+	var rear_weight_per_wheel := mass * (1.0 - front_weight_distribution) * 4.9
 	var rear_spring_rate := calculate_spring_rate(rear_weight_per_wheel, rear_spring_length, rear_resting_ratio)
 	var rear_damping_rate := calculate_damping(rear_weight_per_wheel, rear_spring_rate, rear_damping_ratio)
 	
@@ -510,7 +507,7 @@ func initialize():
 		wheel.fast_bump = rear_damping_rate * rear_bump_damp_multiplier * 0.5
 		wheel.fast_rebound = rear_damping_rate * rear_rebound_damp_multiplier * 0.5
 		wheel.bump_stop_multiplier = rear_bump_stop_multiplier
-		wheel.mass_over_wheel = vehicle_mass * (1.0 - front_weight_distribution) * 0.5
+		wheel.mass_over_wheel = mass * (1.0 - front_weight_distribution) * 0.5
 		wheel.abs_pulse_time = rear_abs_pulse_time
 		wheel.abs_spin_difference_threshold = -absf(rear_abs_spin_difference_threshold)
 	
@@ -1029,7 +1026,7 @@ func calculate_average_tire_friction(weight : float, surface : String) -> float:
 	return friction
 
 func calculate_brake_force() -> void:
-	var friction := calculate_average_tire_friction(vehicle_mass * 9.8, "Road")
+	var friction := calculate_average_tire_friction(mass * 9.8, "Road")
 	max_brake_force = ((friction * braking_grip_multiplier) * average_drive_wheel_radius) / wheel_array.size()
 	max_handbrake_force = ((friction * braking_grip_multiplier * 0.05) / average_drive_wheel_radius)
 
