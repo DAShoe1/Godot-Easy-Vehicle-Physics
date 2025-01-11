@@ -648,11 +648,11 @@ func _physics_process(delta : float) -> void:
 			automatic_transmission = not automatic_transmission
 	
 	if string_shift_up != "":
-		if Input.is_action_just_pressed("Shift Up"):
+		if Input.is_action_just_pressed(string_shift_up):
 			manual_shift(1)
 	
 	if string_shift_down != "":
-		if Input.is_action_just_pressed("Shift Down"):
+		if Input.is_action_just_pressed(string_shift_down):
 			manual_shift(-1)
 	
 	# Reverse gear logic
