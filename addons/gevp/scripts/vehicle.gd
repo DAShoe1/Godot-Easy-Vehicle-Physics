@@ -4,6 +4,56 @@
 class_name Vehicle
 extends RigidBody3D
 
+@export_group("Input Maps", "string_")
+## The name of the input map used for this vehicle's brakes input.
+##
+## [br]The input map must be present in your project, and can be set at [code]Project > Project Settings > Input Map[/code].
+## [br]Leave blank to disable.
+@export var string_brake_input: String = "Brakes"
+## The name of the input map used for steering this vehicle left.
+##
+## [br]The input map must be present in your project, and can be set at [code]Project > Project Settings > Input Map[/code].
+## [br]Leave blank to disable.
+@export var string_steer_left: String = "Steer Left"
+## The name of the input map used for steering this vehicle right.
+##
+## [br]The input map must be present in your project, and can be set at [code]Project > Project Settings > Input Map[/code].
+## [br]Leave blank to disable.
+@export var string_steer_right: String = "Steer Right"
+## The name of the input map used for this vehicle's throttle input.
+##
+## [br]The input map must be present in your project, and can be set at [code]Project > Project Settings > Input Map[/code].
+## [br]Leave blank to disable.
+@export var string_throttle_input: String = "Throttle"
+## The name of the input map used for this vehicle's handbrake input.
+##
+## [br]The input map must be present in your project, and can be set at [code]Project > Project Settings > Input Map[/code].
+## [br]Leave blank to disable.
+@export var string_handbrake_input: String = "Handbrake"
+## The name of the input map used for this vehicle's clutch input.
+##
+## [br]The input map must be present in your project, and can be set at [code]Project > Project Settings > Input Map[/code].
+## [br]Leave blank to disable.
+@export var string_clutch_input: String = "Clutch"
+## The name of the input map used for enabling or disabling
+##
+## the transmission of this vehicle.
+## [br]The input map must be present in your project, and can be set at [code]Project > Project Settings > Input Map[/code].
+## [br]Leave blank to disable.
+@export var string_toggle_transmission: String = "Toggle Transmission"
+## The name of the input map used for shifting up a gear when
+##
+## manual transmission is enabled.
+## [br]The input map must be present in your project, and can be set at [code]Project > Project Settings > Input Map[/code].
+## [br]Leave blank to disable.
+@export var string_shift_up: String = "Shift Up"
+## The name of the input map used for shiftinf down a gear when
+##
+## manual transmission is enabled.
+## [br]The input map must be present in your project, and can be set at [code]Project > Project Settings > Input Map[/code].
+## [br]Leave blank to disable.
+@export var string_shift_down: String = "Shift Down"
+
 @export_group("Wheel Nodes")
 @export var front_left_wheel : Wheel
 @export var front_right_wheel : Wheel
@@ -576,8 +626,43 @@ func _physics_process(delta : float) -> void:
 	if not is_ready:
 		return
 	
+	# Vehicle controller logic ported and modified from vehicle_controllergd.gd
+
+	if string_brake_input != "":
+		brake_input = Input.get_action_strength(string_brake_input)
+
+	if string_steer_left != "" and string_steer_right != "":
+		steering_input = Input.get_action_strength(string_steer_left) - Input.get_action_strength(string_steer_right)
+
+	if string_throttle_input != "":
+		throttle_input = pow(Input.get_action_strength(string_throttle_input), 2.0)
+
+	if string_handbrake_input != "":
+		handbrake_input = Input.get_action_strength(string_handbrake_input)
+	
+	if string_clutch_input != "":
+		clutch_input = clampf(Input.get_action_strength(string_clutch_input) + Input.get_action_strength(string_handbrake_input), 0.0, 1.0)
+	
+	if string_toggle_transmission != "":
+		if Input.is_action_just_pressed(string_toggle_transmission):
+			automatic_transmission = not automatic_transmission
+	
+	if string_shift_up != "":
+		if Input.is_action_just_pressed("Shift Up"):
+			manual_shift(1)
+	
+	if string_shift_down != "":
+		if Input.is_action_just_pressed("Shift Down"):
+			manual_shift(-1)
+	
+	# Reverse gear logic
+
+	if current_gear == -1:
+		brake_input = Input.get_action_strength(string_throttle_input)
+		throttle_input = Input.get_action_strength(string_brake_input)
+	
 	## For stability calculations, we need the vehicle body inertia which isn't
-	## available immidiately
+	## available immediately
 	if not vehicle_inertia:
 		var rigidbody_inertia := PhysicsServer3D.body_get_direct_state(get_rid()).inverse_inertia.inverse()
 		if rigidbody_inertia.is_finite():
