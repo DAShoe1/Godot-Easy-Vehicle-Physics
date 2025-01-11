@@ -5,14 +5,6 @@ class_name Vehicle
 extends RigidBody3D
 
 @export_group("Wheel Nodes")
-## Assign this to the Wheel [RayCast3D] that is this vehicle's front left wheel.
-# @export var front_left_wheel : Wheel
-## Assign this to the Wheel [RayCast3D] that is this vehicle's front right wheel.
-# @export var front_right_wheel : Wheel
-## Assign this to the Wheel [RayCast3D] that is this vehicle's rear left wheel.
-# @export var rear_left_wheel : Wheel
-## Assign this to the Wheel [RayCast3D] that is this vehicle's rear right wheel.
-# @export var rear_right_wheel : Wheel
 
 ## A list of wheels ([RayCast3D]s) that the vehicle has.
 ## [br][br]
@@ -454,21 +446,11 @@ func initialize():
 		else: # All Right wheels
 			wheel.beam_axle = -1.0 if front_beam_axle else 0.0
 
-	# front_left_wheel.opposite_wheel = front_right_wheel
-	# front_left_wheel.beam_axle = 1.0 if front_beam_axle else 0.0
-	# front_right_wheel.opposite_wheel = front_left_wheel
-	# front_right_wheel.beam_axle = -1.0 if front_beam_axle else 0.0
-
 	rear_axle.torque_vectoring = rear_torque_vectoring
 	rear_axle.handbrake = true
 	
 	axles.append(front_axle)
 	axles.append(rear_axle)
-	
-	# wheel_array.append(front_left_wheel)
-	# wheel_array.append(front_right_wheel)
-	# wheel_array.append(rear_left_wheel)
-	# wheel_array.append(rear_right_wheel)
 
 	for wheel in wheel_nodes: wheel_array.append(wheel)
 	
@@ -532,9 +514,6 @@ func initialize():
 		wheel.abs_pulse_time = rear_abs_pulse_time
 		wheel.abs_spin_difference_threshold = -absf(rear_abs_spin_difference_threshold)
 	
-	# var wheel_base := rear_left_wheel.position.z - front_left_wheel.position.z
-	# var front_track_width := front_right_wheel.position.x - front_left_wheel.position.x
-	# var rear_track_width := rear_right_wheel.position.x - rear_left_wheel.position.x
 	var wheel_base: float
 	var front_track_width: float
 	var rear_track_width: float
@@ -588,19 +567,6 @@ func initialize():
 				wheel.ackermann = -rear_ackermann
 				wheel.rotation.z = rear_camber
 				wheel.toe = rear_toe
-
-	# front_left_wheel.ackermann = front_ackermann
-	# front_left_wheel.rotation.z = -front_camber
-	# front_left_wheel.toe = -front_toe
-	# front_right_wheel.ackermann = -front_ackermann
-	# front_right_wheel.rotation.z = front_camber
-	# front_right_wheel.toe = front_toe
-	# rear_left_wheel.ackermann = rear_ackermann
-	# rear_left_wheel.rotation.z = -rear_camber
-	# rear_left_wheel.toe = -rear_toe
-	# rear_right_wheel.ackermann = -rear_ackermann
-	# rear_right_wheel.rotation.z = rear_camber
-	# rear_right_wheel.toe = rear_toe
 	
 	if front_brake_bias < 0.0:
 		var front_axle_spring_force := calculate_axle_spring_force(0.6, front_spring_length, front_spring_rate)
