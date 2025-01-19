@@ -1,8 +1,15 @@
 extends Camera3D
 
+## The distance, in meters, that the camera will be from the
+## [Node3D] in [member follow_this].
 @export var follow_distance = 5
+## The height, in meters, that the camera will be from the
+## [Node3D] in [member follow_this].
 @export var follow_height = 2
+## The speed, in meters per second, that the camera will
+## move to reach the [Node3D] in [member follow_this].
 @export var speed:=20.0
+## The [Node3D] that the camera will follow.
 @export var follow_this : Node3D
 
 var start_rotation : Vector3

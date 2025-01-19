@@ -55,38 +55,48 @@ extends RigidBody3D
 @export var string_shift_down: String = "Shift Down"
 
 @export_group("Wheel Nodes")
+## Assign this to the Wheel [RayCast3D] that is this vehicle's front left wheel.
 @export var front_left_wheel : Wheel
+## Assign this to the Wheel [RayCast3D] that is this vehicle's front right wheel.
 @export var front_right_wheel : Wheel
+## Assign this to the Wheel [RayCast3D] that is this vehicle's rear left wheel.
 @export var rear_left_wheel : Wheel
+## Assign this to the Wheel [RayCast3D] that is this vehicle's rear right wheel.
 @export var rear_right_wheel : Wheel
 
 @export_group("Steering")
-## The rate the steering input changes to smooth input.
+## The rate that the steering input changes in order to smooth
+## out direction changes to the wheel.
 ## Steering input is between -1 and 1. Speed is in units per second.
 @export var steering_speed := 4.25
-## The rate the steering input changes when steering back to center.
+## The rate that the steering input changes when steering back to center.
 ## Speed is in units per second.
 @export var countersteer_speed := 11.0
-## Reduces steering input based on the cars velocity.
+## Reduces steering input based on the vehicle's speed.
 ## Steering speed is divided by the velocity at this magnitude.
 ## The larger the number, the slower the steering at speed.
 @export var steering_speed_decay := 0.20
-## Further steering input is prevented if the wheels lateral slip is greater than this number.
+## Further steering input is prevented if the wheels' lateral slip is greater than this number.
 @export var steering_slip_assist := 0.15
-## The magnitude to adjust steering toward the direction of travel based on the cars lateral velocity.
+## The magnitude to adjust steering toward the direction of travel based on the vehicle's lateral velocity.
 @export var countersteer_assist := 0.9
 ## Steering input is raised to the power of this number.
 ## This has the effect of slowing steering input near the limits.
 @export var steering_exponent := 1.5
 ## The maximum steering angle in radians.
-@export var max_steering_angle := 0.7
+## [br][br]
+## [b]Note:[/b] This property is edited in the inspector in degrees. If you want to use degrees in a script, use [code]deg_to_rad[/code].
+@export_range(0, 360, 0.1, "radians_as_degrees") var max_steering_angle := deg_to_rad(40.0)
+
 @export_subgroup("Front Axle", "front_")
-## The ratio the wheels turn based on steering input.
+## The ratio that the wheels turn based on steering input.
+## [br]The higher this value, the more the wheels will turn due to steering input.
 @export var front_steering_ratio := 1.0
 ## Ackermann wheel steering angle correction
 #@export var front_ackermann := 0.15
 @export_subgroup("Rear Axle", "rear_")
 ## The ratio the wheels turn based on steering input.
+## [br]The higher this value, the more the wheels will turn due to steering input.
 @export var rear_steering_ratio := 0.0
 
 
@@ -101,23 +111,27 @@ extends RigidBody3D
 @export var braking_speed := 10.0
 ## Multiplies the automatically calculated brake force.
 @export var brake_force_multiplier := 1.0
-## Ratio of total brake force applied front vs back. Brake bias is automatically
-## calculated if this value is below 0.0
+## Ratio of total brake force applied as front wheels : back wheels. If this value is
+## below 0.0, this value will be automatically calculated instead.
 @export var front_brake_bias := -1.0
-## Prevents engine power from causing the tires to slip beyond this.
+## Prevents engine power from causing the tires to slip beyond this value.
 ## Values below 0 disable the effect.
 @export var traction_control_max_slip := 8.0
 
 @export_subgroup("Front Axle", "front_")
-## How long the ABS releases the brake when the spin threshold is crossed.
+## How long the ABS releases the brake, in seconds, when the
+## spin threshold is crossed.
 @export var front_abs_pulse_time := 0.03
-## The difference in speed between the wheel and the surface to engage ABS.
+## The difference in speed required between the wheel and the
+## driving surface for ABS to engage.
 @export var front_abs_spin_difference_threshold := 12.0
 
 @export_subgroup("Rear Axle", "rear_")
-## How long the ABS releases the brake when the spin threshold is crossed.
+## How long the ABS releases the brake, in seconds, when the
+## spin threshold is crossed.
 @export var rear_abs_pulse_time := 0.03
-## The difference in speed between the wheel and the surface to engage ABS.
+## The difference in speed required between the wheel and the
+## driving surface for ABS to engage.
 @export var rear_abs_spin_difference_threshold := 12.0
 
 @export_group("Stability")
@@ -342,11 +356,27 @@ extends RigidBody3D
 
 
 @export_group("Aerodynamics")
-## Coefficient of Drag
+## The drag coefficient quantifies how much [b]drag[/b] (force against thrust)
+## the vehicle recieves when moving through air. In the drag equation,
+## a lower drag coefficient means the vehicle will experience less drag
+## force, allowing it to move faster.
+## [br]Typically, the drag coefficient is assumed from the shape of the
+## body, where more teardrop-shaped bodies experience a lower drag coefficient.
+## Un-streamlined cyllindrical bodies have a drag coefficient of
+## around [code]0.80[/code], while more streamlined teardrop-shaped bodies 
+## can have a drag coefficient as low as [code]0.05[/code], or even lower.
+## [br]As a more relavant example, most cars have drag coefficients
+## around [code]0.40[/code].
 @export var coefficient_of_drag := 0.3
-## Air Density
+## From [url=https://www.grc.nasa.gov/www/k-12/VirtualAero/BottleRocket/airplane/density.html#:~:text=Halving%20the%20density%20halves%20the,above%20which%20it%20cannot%20fly.]NASA[/url]:
+## [i]"Halving the density halves the lift, halving the density halves the drag. The [lb]air[rb] density depends on the type of [lb]air[rb] and the depth of the [lb]air[rb]. In the atmosphere, air density decreases as altitude increases. This explains why airplanes have a flight ceiling, an altitude above which it cannot fly."[/i]
 @export var air_density := 1.225
-## Frontal area of the car in meters squared.
+## The amount of surface area the front-facing part of the vehicle has,
+## in meters squared ([code]m^2[/code]).
+## [br][br]
+## [b]Note:[/b] You do not have to calculate this value to be exact,
+## a rough estimate - or even something completely different, depending
+## on the result you want - will do.
 @export var frontal_area := 2.0
 
 const ANGULAR_VELOCITY_TO_RPM := 60.0 / TAU

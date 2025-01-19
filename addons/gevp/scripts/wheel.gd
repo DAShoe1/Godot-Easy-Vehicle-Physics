@@ -7,6 +7,14 @@
 class_name Wheel
 extends RayCast3D
 
+## The [Node3D] correlating to this Wheel, which will have its
+## rotation manipulated to make it spin and rotate.
+## [br][br]
+## [b]Tip:[/b] Make sure that your wheel is facing in the [b]+Z[/b] axis
+## as this is considered the forward direction by both Godot and this script.
+## [br][br]
+## [b]Tip:[/b] If you're having issues with positioning your wheel,
+## try parenting it to a [Node3D] and using that as the wheel node instead.
 @export var wheel_node : Node3D
 
 var wheel_mass := 15.0

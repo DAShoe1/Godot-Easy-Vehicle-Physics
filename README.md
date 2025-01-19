@@ -1,5 +1,5 @@
 # Godot-Easy-Vehicle-Physics
-A ray cast based rigid body vehicle for Godot 4.2
+A ray cast based rigid body vehicle system for Godot 4.2 and above
 
 ## Description
 A physics based vehicle controller designed to play well on a keyboard and be easy to configure. All parameters are contained in one script (vehicle.gd) and tooltips are provided for all of them.
