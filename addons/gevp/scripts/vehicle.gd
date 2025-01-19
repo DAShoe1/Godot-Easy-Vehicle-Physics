@@ -607,7 +607,7 @@ func _physics_process(delta : float) -> void:
 		return
 	
 	## For stability calculations, we need the vehicle body inertia which isn't
-	## available immidiately
+	## available immediately
 	if not vehicle_inertia:
 		var rigidbody_inertia := PhysicsServer3D.body_get_direct_state(get_rid()).inverse_inertia.inverse()
 		if rigidbody_inertia.is_finite():
