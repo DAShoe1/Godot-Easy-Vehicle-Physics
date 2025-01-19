@@ -1,6 +1,8 @@
 extends Node3D
+## Controls any [Vehicle] node using custom-defined input maps.
+class_name VehicleController
 
-## The Vehicle that this vehicle controller will send
+## The [Vehicle] that this vehicle controller will send
 ## input values to. Required for the vehicle controller to work properly.
 @export var vehicle_node : Vehicle
 
