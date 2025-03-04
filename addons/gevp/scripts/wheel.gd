@@ -101,7 +101,7 @@ func steer(input : float, max_steering_angle : float):
 	input *= steering_ratio
 	rotation.y = (max_steering_angle * (input + (1 - cos(input * 0.5 * PI)) * ackermann)) + toe
 
-func process_torque(drive : float, drive_inertia : float, brake_torque : float, abs : bool, delta : float) -> float:
+func process_torque(drive : float, drive_inertia : float, brake_torque : float, allow_abs : bool, delta : float) -> float:
 	## Add the torque the wheel produced last frame from surface friction
 	var net_torque := force_vector.y * tire_radius
 	var previous_spin := spin
@@ -110,11 +110,11 @@ func process_torque(drive : float, drive_inertia : float, brake_torque : float, 
 	## If antilock brakes are still active, don't apply brake torque
 	if abs_enable_time > vehicle.delta_time:
 		brake_torque = 0.0
-		abs = false
+		allow_abs = false
 	
 	## If the wheel slip from braking is too great, enable the antilock brakes
 	if absf(spin) > 5.0 and spin_velocity_diff < abs_spin_difference_threshold:
-		if abs and brake_torque > 0.0:
+		if allow_abs and brake_torque > 0.0:
 			brake_torque = 0.0
 			abs_enable_time = vehicle.delta_time + abs_pulse_time
 	
@@ -127,7 +127,7 @@ func process_torque(drive : float, drive_inertia : float, brake_torque : float, 
 	
 	## If braking and nearly stopped, just stop the wheel completely.
 	if absf(spin) < 5.0 and brake_torque > absf(net_torque):
-		if abs and absf(local_velocity.z) > 2.0:
+		if allow_abs and absf(local_velocity.z) > 2.0:
 			abs_enable_time = vehicle.delta_time + abs_pulse_time
 		else:
 			spin = 0.0

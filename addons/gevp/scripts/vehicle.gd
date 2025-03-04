@@ -625,7 +625,7 @@ func _physics_process(delta : float) -> void:
 	process_throttle(delta)
 	process_motor(delta)
 	process_clutch(delta)
-	process_transmission(delta)
+	process_transmission()
 	process_drive(delta)
 	process_forces(delta)
 	process_stability()
@@ -808,7 +808,7 @@ func process_clutch(delta : float):
 	
 	motor_rpm = new_rpm
 
-func process_transmission(delta : float) -> void:
+func process_transmission() -> void:
 	if is_shifting:
 		if delta_time > complete_shift_delta_time:
 			complete_shift()
@@ -830,9 +830,6 @@ func process_transmission(delta : float) -> void:
 			reversing = true
 		
 		if not reversing:
-			var next_gear_rpm := 0.0
-			if current_gear < gear_ratios.size():
-				next_gear_rpm = get_gear_ratio(current_gear + 1) * ideal_wheel_spin * ANGULAR_VELOCITY_TO_RPM
 			var previous_gear_rpm := 0.0
 			if current_gear - 1 > 0:
 				previous_gear_rpm = get_gear_ratio(current_gear - 1) * maxf(drivetrain_spin, ideal_wheel_spin) * ANGULAR_VELOCITY_TO_RPM
@@ -867,7 +864,6 @@ func process_drive(delta : float) -> void:
 	var current_gear_ratio := get_gear_ratio(current_gear)
 	var drive_torque := 0.0
 	var drive_inertia := motor_moment + pow(current_gear_ratio, 2) * gear_inertia
-	var max_drive_torque := 0.0
 	var is_slipping := get_is_a_wheel_slipping()
 	
 	if current_gear != 0:
@@ -904,12 +900,12 @@ func process_axle_drive(axle : Axle, torque : float, drive_inertia : float, delt
 		torque = 0.0
 		drive_inertia = 0.0
 	
-	var abs := true
+	var allow_abs := true
 	
 	## If the handbrake in engaged, disable the antilock brakes
 	if axle.handbrake:
 		brake_force += handbrake_force
-		abs = false
+		allow_abs = false
 	
 	## If enough torque is applied to the axle, lock to wheel speeds and add
 	## torque vectoring
@@ -929,8 +925,8 @@ func process_axle_drive(axle : Axle, torque : float, drive_inertia : float, delt
 	var rotation_sum := 0.0
 	var split := (axle.rotation_split + 1.0) * 0.5
 	axle.applied_split = axle.rotation_split
-	rotation_sum += axle.wheels[0].process_torque(torque * split, drive_inertia, brake_force * 0.5 * axle.brake_bias, abs, delta)
-	rotation_sum += axle.wheels[1].process_torque(torque * (1.0 - split), drive_inertia, brake_force * 0.5 * axle.brake_bias, abs, delta)
+	rotation_sum += axle.wheels[0].process_torque(torque * split, drive_inertia, brake_force * 0.5 * axle.brake_bias, allow_abs, delta)
+	rotation_sum += axle.wheels[1].process_torque(torque * (1.0 - split), drive_inertia, brake_force * 0.5 * axle.brake_bias, allow_abs, delta)
 	axle.rotation_split = clampf(rotation_sum, -1.0, 1.0)
 
 func process_forces(delta : float) -> void:
