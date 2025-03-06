@@ -758,7 +758,7 @@ func process_motor(delta : float) -> void:
 	## Disengage clutch when near idle
 	if motor_rpm < idle_rpm + 100:
 		need_clutch = true
-	elif new_rpm > clutch_out_rpm:
+	elif new_rpm > maxf(clutch_out_rpm, idle_rpm):
 		need_clutch = false
 	
 	motor_rpm = maxf(motor_rpm, idle_rpm)
@@ -801,7 +801,7 @@ func process_clutch(delta : float):
 		new_rpm = idle_rpm
 	if new_rpm < idle_rpm + 100:
 		need_clutch = true
-	elif new_rpm > clutch_out_rpm:
+	elif new_rpm > maxf(clutch_out_rpm, idle_rpm):
 		need_clutch = false
 	if new_rpm > max_rpm * 1.1:
 		new_rpm = max_rpm * 1.1
@@ -843,7 +843,7 @@ func process_transmission() -> void:
 					if current_ideal_gear_rpm > max_rpm * 0.8 and current_real_gear_rpm > max_rpm:
 						if delta_time - last_shift_delta_time > shift_time:
 							shift(1)
-				elif current_gear == 0 and motor_rpm > clutch_out_rpm:
+				elif current_gear == 0 and motor_rpm > maxf(clutch_out_rpm, idle_rpm):
 					shift(1)
 			if current_gear - 1 > 0:
 				if current_gear > 1 and previous_gear_rpm < 0.75 * max_rpm:
