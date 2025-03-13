@@ -391,6 +391,7 @@ public partial class GEVPVehicle : RigidBody3D
     [Export] public float ClutchAmount = 0.0f;
     [Export] public int CurrentGear = 0;
     [Export] public int RequestedGear = 0;
+    private int _requestedGear = 0;
     [Export] public float TorqueOutput = 0.0f;
     [Export] public float ClutchTorque = 0.0f;
     [Export] public float MaxClutchTorque = 0.0f;
@@ -1047,9 +1048,7 @@ public partial class GEVPVehicle : RigidBody3D
             float idealWheelSpin = Speed / AverageDriveWheelRadius;
             float drivetrainSpin = GetDrivetrainSpin();
             float realWheelSpin = drivetrainSpin * GetGearRatio(CurrentGear);
-            var currentIdealGear = CurrentGear - 1;
-            currentIdealGear = currentIdealGear < 0 ? GearRatios.Count - 1 : currentIdealGear;
-            float currentIdealGearRpm = GearRatios[currentIdealGear] * FinalDrive * idealWheelSpin * AngularVelocityToRpm;
+            float currentIdealGearRpm = GearRatios[GetGear(CurrentGear - 1)] * FinalDrive * idealWheelSpin * AngularVelocityToRpm;
             float currentRealGearRpm = realWheelSpin * AngularVelocityToRpm;
 
             if (CurrentGear == -1)
@@ -1127,7 +1126,6 @@ public partial class GEVPVehicle : RigidBody3D
             }
         }
     }
-
 
     public void ProcessDrive(float delta)
     {
@@ -1327,7 +1325,7 @@ public partial class GEVPVehicle : RigidBody3D
         if (RequestedGear < CurrentGear)
         {
             float wheelSpin = Speed / AverageDriveWheelRadius;
-            float requestedGearRpm = GearRatios[RequestedGear - 1] * FinalDrive * wheelSpin * AngularVelocityToRpm;
+            float requestedGearRpm = GearRatios[GetGear(RequestedGear - 1)] * FinalDrive * wheelSpin * AngularVelocityToRpm;
             MotorRpm = Mathf.Lerp(MotorRpm, requestedGearRpm, 0.5f);
         }
 
@@ -1393,7 +1391,7 @@ public partial class GEVPVehicle : RigidBody3D
     {
         if (gear > 0)
         {
-            return GearRatios[gear - 1] * FinalDrive;
+            return GearRatios[GetGear(gear - 1)] * FinalDrive;
         }
         else if (gear == -1)
         {
@@ -1464,4 +1462,12 @@ public partial class GEVPVehicle : RigidBody3D
     {
         return springLength * compression * 1000.0f * springRate * 2.0f;
     }
+
+    
+    private int GetGear(int gear)
+    {
+        gear = gear < 0 ? GearRatios.Count - 1 : gear;
+        return gear;
+    }
+
 }
