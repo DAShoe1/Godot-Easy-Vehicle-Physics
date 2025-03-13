@@ -4,11 +4,11 @@
 [ext_resource type="PackedScene" uid="uid://ccs7xtede51mo" path="res://addons/gevp/scenes/simcade_car.tscn" id="2_ms26v"]
 [ext_resource type="PackedScene" uid="uid://b2hlchrj4h2b7" path="res://addons/gevp/scenes/engine_sound.tscn" id="3_o8yet"]
 [ext_resource type="PackedScene" uid="uid://h6vdpba71kpr" path="res://addons/gevp/scenes/smoke_effect.tscn" id="4_6e2i6"]
-[ext_resource type="Script" path="res://addons/gevp/scripts/gui.gd" id="4_s0wyh"]
-[ext_resource type="Script" path="res://addons/gevp/scripts/camera.gd" id="5_5rui7"]
+[ext_resource type="Script" uid="uid://b52prrax52dv5" path="res://addons/gevp/scripts/gui.gd" id="4_s0wyh"]
+[ext_resource type="Script" uid="uid://7q2hyq0lt6ih" path="res://addons/gevp/scripts/camera.gd" id="5_5rui7"]
 [ext_resource type="PackedScene" uid="uid://dxnvsoi1pvfeu" path="res://addons/gevp/scenes/track.tscn" id="6_up3gk"]
-[ext_resource type="Script" path="res://addons/gevp/scripts/debug.gd" id="7_ht2x6"]
-[ext_resource type="Script" path="res://addons/gevp/scripts/debug_ui.gd" id="8_a7fg4"]
+[ext_resource type="Script" uid="uid://ba4m5rr4eyfpm" path="res://addons/gevp/scripts/debug.gd" id="7_ht2x6"]
+[ext_resource type="Script" uid="uid://d2bhtevc3jtfr" path="res://addons/gevp/scripts/debug_ui.gd" id="8_a7fg4"]
 
 [node name="ArcadeDemo" type="Node3D"]
 
