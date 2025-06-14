@@ -12,8 +12,12 @@ config_version=5
 
 config/name="Godot Easy Vehicle Physics"
 run/main_scene="res://addons/gevp/scenes/demo_arcade.tscn"
-config/features=PackedStringArray("4.3", "Forward Plus")
+config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 config/icon="res://addons/gevp/icon.png"
+
+[dotnet]
+
+project/assembly_name="Godot Easy Vehicle Physics"
 
 [input]
 

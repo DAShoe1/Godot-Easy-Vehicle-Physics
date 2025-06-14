@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c3ixqkc6k14yi"]
+
+[ext_resource type="Script" uid="uid://ce2mlm0dadwjo" path="res://addons/gevp/gevp-cs/scripts/cs_vehicle_controllergd.gd" id="1_gtra1"]
+
+[node name="CSVehicleController" type="Node3D"]
+script = ExtResource("1_gtra1")
