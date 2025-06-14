@@ -46,3 +46,4 @@ The car model provided as a demo is from [Kenney.nl Car Kit](https://www.kenney.
 ## Projects using Godot Easy Vehicle Physics
 If you are working on a project using this add-on and want to list it here, open an issue to let me know.
 - [Jack of all Cars](https://dashoe1.itch.io/jack-of-all-cars)
+- [Another Lap](https://store.steampowered.com/app/3550210/Another_Lap/)
