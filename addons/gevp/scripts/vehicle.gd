@@ -85,7 +85,7 @@ extends RigidBody3D
 @export var rear_abs_spin_difference_threshold := 12.0
 
 @export_group("Stability")
-## Stablity applies torque forces to the vehicle body when the body angle
+## Stability applies torque forces to the vehicle body when the body angle
 ## relative to the direction of travel exceeds a threshold.
 @export var enable_stability := true
 ## The yaw angle the vehicle must reach before stability is applied.
@@ -95,7 +95,7 @@ extends RigidBody3D
 @export var stability_yaw_strength := 6.0
 ## Additional strength multiplier for a grounded vehicle to overcome traction.
 @export var stability_yaw_ground_multiplier := 2.0
-## A multiplier for the torque used to keep the vehicle upright while airbourn.
+## A multiplier for the torque used to keep the vehicle upright while airborne.
 @export var stability_upright_spring := 1.0
 ## A multiplier for the torque used to dampen rotation while airborne.
 @export var stability_upright_damping := 1000.0
@@ -198,11 +198,11 @@ extends RigidBody3D
 ## A value of 1 would be critically damped. Passenger cars typically have a
 ## ratio around 0.3, while a race car could be as high as 0.9.
 @export var front_damping_ratio := 0.4
-## Bump damping multiplier applied to the damping force calulated from the
+## Bump damping multiplier applied to the damping force calculated from the
 ## damping ratio. A typical ratio for a passenger car is 2/3 bump damping to
 ## 3/2 rebound damping. Race cars typically run 3/2 bump to 2/3 rebound.
 @export var front_bump_damp_multiplier := 0.6667
-## Rebound damping multiplier applied to the damping force calulated from the
+## Rebound damping multiplier applied to the damping force calculated from the
 ## damping ratio. A typical ratio for a passenger car is 2/3 bump damping to
 ## 3/2 rebound damping. Race cars typically run 3/2 bump to 2/3 rebound.
 @export var front_rebound_damp_multiplier := 1.5
@@ -264,7 +264,7 @@ extends RigidBody3D
 ## torque centered on the wheel. 
 @export var wheel_to_body_torque_multiplier := 1.0
 ## Represents tire stiffness in the brush tire model. Higher values increase
-## the responsivness of the tire.
+## the responsiveness of the tire.
 ## Surface detection uses node groups to identify the surface, so make sure
 ## your staticbodies and rigidbodies belong to one of these groups.
 @export var tire_stiffnesses := { "Road" : 10.0, "Dirt" : 0.5, "Grass" : 0.5 }
@@ -307,15 +307,15 @@ extends RigidBody3D
 
 @export_group("Aerodynamics")
 ## The drag coefficient quantifies how much [b]drag[/b] (force against thrust)
-## the vehicle recieves when moving through air. In the drag equation,
+## the vehicle receives when moving through air. In the drag equation,
 ## a lower drag coefficient means the vehicle will experience less drag
 ## force, allowing it to move faster.
 ## [br]Typically, the drag coefficient is assumed from the shape of the
 ## body, where more teardrop-shaped bodies experience a lower drag coefficient.
-## Un-streamlined cyllindrical bodies have a drag coefficient of
+## Un-streamlined cylindrical bodies have a drag coefficient of
 ## around [code]0.80[/code], while more streamlined teardrop-shaped bodies 
 ## can have a drag coefficient as low as [code]0.05[/code], or even lower.
-## [br]As a more relavant example, most cars have drag coefficients
+## [br]As a more relevant example, most cars have drag coefficients
 ## around [code]0.40[/code].
 @export var coefficient_of_drag := 0.3
 ## From [url=https://www.grc.nasa.gov/www/k-12/VirtualAero/BottleRocket/airplane/density.html#:~:text=Halving%20the%20density%20halves%20the,above%20which%20it%20cannot%20fly.]NASA[/url]:
@@ -744,7 +744,7 @@ func process_motor(delta : float) -> void:
 	## Adjust torque based on throttle input, clutch input, and motor drag
 	torque_output -= drag_torque * (1.0 + (clutch_amount * (1.0 - throttle_amount)))
 	
-	## Prevent motor from outputing torque below idle or far beyond redline
+	## Prevent motor from outputting torque below idle or far beyond redline
 	var new_rpm := motor_rpm
 	new_rpm += ANGULAR_VELOCITY_TO_RPM * delta * torque_output / motor_moment
 	motor_is_redline = false
@@ -816,7 +816,7 @@ func process_transmission() -> void:
 	
 	## For automatic transmissions to determine when to shift the current wheel speed and 
 	## what the wheel speed would be without slip are used. This allows vehicles to spin the
-	## tires without immidiately shifting to the next gear.
+	## tires without immediately shifting to the next gear.
 	
 	if automatic_transmission:
 		var reversing := false
