@@ -41,7 +41,7 @@ class_name VehicleController
 ## [br]The input map must be present in your project, and can be set at [code]Project > Project Settings > Input Map[/code].
 ## [br]Leave blank to disable.
 @export var string_shift_up: String = "Shift Up"
-## The name of the input map used for shiftinf down a gear when
+## The name of the input map used for shifting down a gear when
 ## manual transmission is enabled.
 ## [br]The input map must be present in your project, and can be set at [code]Project > Project Settings > Input Map[/code].
 ## [br]Leave blank to disable.
