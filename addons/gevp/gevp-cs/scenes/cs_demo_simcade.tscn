@@ -1,0 +1,75 @@
+[gd_scene load_steps=10 format=3 uid="uid://y4hs22kwif5o"]
+
+[ext_resource type="PackedScene" uid="uid://c3ixqkc6k14yi" path="res://addons/gevp/gevp-cs/scenes/cs_vehicle_controller.tscn" id="1_cl7de"]
+[ext_resource type="PackedScene" uid="uid://ccs7xtede52mo" path="res://addons/gevp/gevp-cs/scenes/cs_simcade_car.tscn" id="2_shyfa"]
+[ext_resource type="PackedScene" uid="uid://brlo4dakc5fgs" path="res://addons/gevp/gevp-cs/scenes/cs_engine_sound.tscn" id="3_fte74"]
+[ext_resource type="PackedScene" uid="uid://h6vdpba72kpr" path="res://addons/gevp/gevp-cs/scenes/cs_smoke_effect.tscn" id="4_an2g6"]
+[ext_resource type="Script" uid="uid://cbr66w50o70o8" path="res://addons/gevp/gevp-cs/scripts/cs_gui.gd" id="5_cl7de"]
+[ext_resource type="Script" uid="uid://fb258hof4100" path="res://addons/gevp/gevp-cs/scripts/cs_debug.gd" id="7_adpdr"]
+[ext_resource type="Script" uid="uid://7q2hyq0lt6ih" path="res://addons/gevp/scripts/camera.gd" id="9_qx0de"]
+[ext_resource type="PackedScene" uid="uid://dxnvsoi1pvfeu" path="res://addons/gevp/scenes/track.tscn" id="10_jibop"]
+[ext_resource type="Script" uid="uid://d2bhtevc3jtfr" path="res://addons/gevp/scripts/debug_ui.gd" id="12_11xfp"]
+
+[node name="CSArcadeDemo" type="Node3D"]
+
+[node name="CSVehicleController" parent="." node_paths=PackedStringArray("vehicle_node") instance=ExtResource("1_cl7de")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.19813, 0)
+vehicle_node = NodePath("CSSimcadeCar")
+
+[node name="CSSimcadeCar" parent="CSVehicleController" instance=ExtResource("2_shyfa")]
+
+[node name="CSEngineSound" parent="CSVehicleController/CSSimcadeCar" node_paths=PackedStringArray("vehicle") instance=ExtResource("3_fte74")]
+vehicle = NodePath("..")
+
+[node name="CSSmoke" parent="CSVehicleController/CSSimcadeCar" node_paths=PackedStringArray("vehicle") instance=ExtResource("4_an2g6")]
+vehicle = NodePath("..")
+
+[node name="GUI" type="Control" parent="." node_paths=PackedStringArray("vehicle")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_cl7de")
+vehicle = NodePath("../CSVehicleController/CSSimcadeCar")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GUI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Speed" type="Label" parent="GUI/VBoxContainer"]
+layout_mode = 2
+
+[node name="RPM" type="Label" parent="GUI/VBoxContainer"]
+layout_mode = 2
+
+[node name="Gear" type="Label" parent="GUI/VBoxContainer"]
+layout_mode = 2
+
+[node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("follow_this")]
+transform = Transform3D(1, 0, 0, 0, 0.989776, 0.142629, 0, -0.142629, 0.989776, 4.05282, 4.72172, 5.80061)
+script = ExtResource("9_qx0de")
+follow_distance = 8
+follow_height = 5
+follow_this = NodePath("../CSVehicleController/CSSimcadeCar")
+
+[node name="Demo" parent="." instance=ExtResource("10_jibop")]
+
+[node name="Debug" type="Node" parent="." node_paths=PackedStringArray("vehicle")]
+script = ExtResource("7_adpdr")
+vehicle = NodePath("../CSVehicleController/CSSimcadeCar")
+
+[node name="DebugUI" type="Control" parent="Debug"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("12_11xfp")
+metadata/_edit_use_anchors_ = true

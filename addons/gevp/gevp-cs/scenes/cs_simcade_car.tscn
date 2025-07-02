@@ -1,9 +1,9 @@
-[gd_scene load_steps=23 format=4 uid="uid://ccs7xtede51mo"]
+[gd_scene load_steps=23 format=4 uid="uid://ccs7xtede52mo"]
 
-[ext_resource type="Script" uid="uid://cmdlke4gwe250" path="res://addons/gevp/scripts/vehicle.gd" id="1_e1t6n"]
-[ext_resource type="Script" uid="uid://bb5hv1sihb3rr" path="res://addons/gevp/scripts/wheel.gd" id="2_e6c7c"]
+[ext_resource type="Script" uid="uid://l3lk3k0brq16" path="res://addons/gevp/gevp-cs/scripts/GEVPVehicle.cs" id="1_myxjd"]
+[ext_resource type="Script" uid="uid://cb5n8exa5d2w7" path="res://addons/gevp/gevp-cs/scripts/GEVPWheel.cs" id="2_kane1"]
 
-[sub_resource type="Curve" id="Curve_bt7kc"]
+[sub_resource type="Curve" id="Curve_myxjd"]
 _data = [Vector2(0, 0.494505), 0.0, 2.04495, 0, 0, Vector2(0.767241, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.758242), -2.03956, 0.0, 0, 0]
 point_count = 3
 
@@ -436,56 +436,56 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_qxhxi")
 
-[node name="VehicleRigidBody" type="RigidBody3D" node_paths=PackedStringArray("front_left_wheel", "front_right_wheel", "rear_left_wheel", "rear_right_wheel")]
-script = ExtResource("1_e1t6n")
-front_left_wheel = NodePath("WheelFrontLeft")
-front_right_wheel = NodePath("WheelFrontRight")
-rear_left_wheel = NodePath("WheelRearLeft")
-rear_right_wheel = NodePath("WheelRearRight")
-steering_slip_assist = 0.3
-countersteer_assist = 0.75
-stability_yaw_strength = 2.0
-stability_yaw_ground_multiplier = 4.0
-max_torque = 569.0
-max_rpm = 6500.0
-idle_rpm = 700.0
-torque_curve = SubResource("Curve_bt7kc")
-motor_moment = 0.3
-gear_ratios = Array[float]([3.01, 2.07, 1.43, 1.0, 0.84, 0.5])
-final_drive = 3.45
-reverse_ratio = 3.28
-shift_time = 0.25
-front_variable_split = 0.5
-vehicle_mass = 1746.0
-front_weight_distribution = 0.514
-center_of_gravity_height_offset = -0.14
-front_resting_ratio = 0.6
-front_damping_ratio = 0.5
-front_arb_ratio = 0.3
-front_toe = 0.005
-rear_resting_ratio = 0.6
-rear_damping_ratio = 0.5
-rear_toe = 0.005
-tire_stiffnesses = {
+[node name="CSSimcadeCar" type="RigidBody3D" node_paths=PackedStringArray("FrontLeftWheel", "FrontRightWheel", "RearLeftWheel", "RearRightWheel")]
+script = ExtResource("1_myxjd")
+FrontLeftWheel = NodePath("WheelFrontLeft")
+FrontRightWheel = NodePath("WheelFrontRight")
+RearLeftWheel = NodePath("WheelRearLeft")
+RearRightWheel = NodePath("WheelRearRight")
+SteeringSlipAssist = 0.3
+CountersteerAssist = 0.75
+StabilityYawStrength = 2.0
+StabilityYawGroundMultiplier = 4.0
+MaxTorque = 569.0
+MaxRpm = 6500.0
+IdleRpm = 700.0
+TorqueCurve = SubResource("Curve_myxjd")
+MotorMoment = 0.3
+GearRatios = Array[float]([3.01, 2.07, 1.43, 1.0, 0.84, 0.5])
+FinalDrive = 3.45
+ReverseRatio = 3.28
+ShiftTime = 0.25
+FrontVariableSplit = 0.5
+VehicleMass = 1746.0
+FrontWeightDistribution = 0.514
+CenterOfGravityHeightOffset = -0.14
+FrontRestingRatio = 0.6
+FrontDampingRatio = 0.5
+FrontArbRatio = 0.3
+FrontToe = 0.005
+RearRestingRatio = 0.6
+RearDampingRatio = 0.5
+RearToe = 0.005
+TireStiffnesses = Dictionary[String, float]({
 "Dirt": 0.5,
 "Grass": 0.5,
 "Road": 5.0
-}
-coefficient_of_friction = {
+})
+CoefficientOfFriction = Dictionary[String, float]({
 "Dirt": 1.4,
 "Grass": 1.0,
 "Road": 2.0
-}
-longitudinal_grip_ratio = {
+})
+LongitudinalGripRatio = Dictionary[String, float]({
 "Dirt": 0.56,
 "Grass": 0.8,
 "Road": 0.55
-}
-front_tire_radius = 0.355
-rear_tire_radius = 0.355
-rear_tire_width = 275.0
-coefficient_of_drag = 0.35
-frontal_area = 2.19
+})
+FrontTireRadius = 0.355
+RearTireRadius = 0.355
+RearTireWidth = 275.0
+CoefficientOfDrag = 0.35
+FrontalArea = 2.19
 
 [node name="Muscle" type="MeshInstance3D" parent="."]
 transform = Transform3D(-100, 8.74228e-06, 1.04216e-12, 0, -1.19209e-05, 100, 8.74228e-06, 100, 1.19209e-05, 3.30492e-15, 0.268129, 3.78038e-08)
@@ -496,10 +496,10 @@ skeleton = NodePath("")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.719, -0.043)
 shape = SubResource("BoxShape3D_yyyvj")
 
-[node name="WheelFrontLeft" type="RayCast3D" parent="." node_paths=PackedStringArray("wheel_node")]
+[node name="WheelFrontLeft" type="RayCast3D" parent="." node_paths=PackedStringArray("WheelNode")]
 transform = Transform3D(1, -8.47033e-22, 7.10543e-15, -8.47033e-22, 1, 1.42109e-14, 7.10543e-15, -1.42109e-14, 1, -0.924808, 0.0879494, -1.44939)
-script = ExtResource("2_e6c7c")
-wheel_node = NodePath("FrontLeftWheel")
+script = ExtResource("2_kane1")
+WheelNode = NodePath("FrontLeftWheel")
 
 [node name="FrontLeftWheel" type="Node3D" parent="WheelFrontLeft"]
 
@@ -508,10 +508,10 @@ transform = Transform3D(-100, 8.74227e-06, 1.04216e-12, -2.08938e-19, -1.19209e-
 mesh = SubResource("ArrayMesh_lnj5a")
 skeleton = NodePath("")
 
-[node name="WheelFrontRight" type="RayCast3D" parent="." node_paths=PackedStringArray("wheel_node")]
+[node name="WheelFrontRight" type="RayCast3D" parent="." node_paths=PackedStringArray("WheelNode")]
 transform = Transform3D(1, -8.47033e-22, 7.10543e-15, -8.47033e-22, 1, 1.42109e-14, 7.10543e-15, -1.42109e-14, 1, 0.924808, 0.0879494, -1.44939)
-script = ExtResource("2_e6c7c")
-wheel_node = NodePath("FrontRightWheel")
+script = ExtResource("2_kane1")
+WheelNode = NodePath("FrontRightWheel")
 
 [node name="FrontRightWheel" type="Node3D" parent="WheelFrontRight"]
 
@@ -520,10 +520,10 @@ transform = Transform3D(-100, 8.74227e-06, 1.04216e-12, -2.08938e-19, -1.19209e-
 mesh = SubResource("ArrayMesh_uysgq")
 skeleton = NodePath("")
 
-[node name="WheelRearLeft" type="RayCast3D" parent="." node_paths=PackedStringArray("wheel_node")]
+[node name="WheelRearLeft" type="RayCast3D" parent="." node_paths=PackedStringArray("WheelNode")]
 transform = Transform3D(1, -8.47033e-22, 7.10543e-15, -8.47033e-22, 1, 1.42109e-14, 7.10543e-15, -1.42109e-14, 1, -0.924808, 0.0879494, 1.44939)
-script = ExtResource("2_e6c7c")
-wheel_node = NodePath("RearLeftWheel")
+script = ExtResource("2_kane1")
+WheelNode = NodePath("RearLeftWheel")
 
 [node name="RearLeftWheel" type="Node3D" parent="WheelRearLeft"]
 
@@ -532,10 +532,10 @@ transform = Transform3D(-100, 8.74227e-06, 1.04216e-12, -2.08938e-19, -1.19209e-
 mesh = SubResource("ArrayMesh_66mmq")
 skeleton = NodePath("")
 
-[node name="WheelRearRight" type="RayCast3D" parent="." node_paths=PackedStringArray("wheel_node")]
+[node name="WheelRearRight" type="RayCast3D" parent="." node_paths=PackedStringArray("WheelNode")]
 transform = Transform3D(1, -8.47033e-22, 7.10543e-15, -8.47033e-22, 1, 1.42109e-14, 7.10543e-15, -1.42109e-14, 1, 0.924808, 0.0879494, 1.44939)
-script = ExtResource("2_e6c7c")
-wheel_node = NodePath("RearRightWheel")
+script = ExtResource("2_kane1")
+WheelNode = NodePath("RearRightWheel")
 
 [node name="RearRightWheel" type="Node3D" parent="WheelRearRight"]
 
