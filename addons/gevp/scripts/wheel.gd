@@ -159,7 +159,7 @@ func process_forces(opposite_compression : float, braking : bool, delta : float)
 		last_collision_normal = get_collision_normal()
 		var surface_groups : Array[StringName] = last_collider.get_groups()
 		if surface_groups.size() > 0:
-			if surface_type != surface_groups[0]:
+			if surface_type != surface_groups[0] and rolling_resistance.keys().has(surface_groups[0]):
 				surface_type = surface_groups[0]
 				current_cof = coefficient_of_friction[surface_type]
 				current_rolling_resistance = rolling_resistance[surface_type]
