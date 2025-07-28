@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=DAShoe1&project=Godot-Easy-Vehicle-Physics&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 # Godot-Easy-Vehicle-Physics
 A ray cast based rigid body vehicle system for Godot 4.2 and above
 
