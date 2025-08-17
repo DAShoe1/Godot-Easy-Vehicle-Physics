@@ -6,13 +6,13 @@ extends RigidBody3D
 
 @export_group("Wheel Nodes")
 ## Assign this to the Wheel [RayCast3D] that is this vehicle's front left wheel.
-@export var front_left_wheel : Wheel
+@export var front_left_wheel: Wheel
 ## Assign this to the Wheel [RayCast3D] that is this vehicle's front right wheel.
-@export var front_right_wheel : Wheel
+@export var front_right_wheel: Wheel
 ## Assign this to the Wheel [RayCast3D] that is this vehicle's rear left wheel.
-@export var rear_left_wheel : Wheel
+@export var rear_left_wheel: Wheel
 ## Assign this to the Wheel [RayCast3D] that is this vehicle's rear right wheel.
-@export var rear_right_wheel : Wheel
+@export var rear_right_wheel: Wheel
 
 @export_group("Steering")
 ## The rate that the steering input changes in order to smooth
@@ -109,7 +109,7 @@ extends RigidBody3D
 ## Idle motor RPM.
 @export var idle_rpm := 1000.0
 ## Percentage of torque produced across the RPM range.
-@export var torque_curve : Curve
+@export var torque_curve: Curve
 ## Variable motor drag based on RPM.
 @export var motor_drag := 0.005
 ## Constant motor drag.
@@ -124,7 +124,7 @@ extends RigidBody3D
 
 @export_group("Gearbox")
 ## Transmission gear ratios, the size of the array determines the number of gears
-@export var gear_ratios : Array[float] = [ 3.8, 2.3, 1.7, 1.3, 1.0, 0.8 ] 
+@export var gear_ratios: Array[float] = [3.8, 2.3, 1.7, 1.3, 1.0, 0.8]
 ## Final drive ratio
 @export var final_drive := 3.2
 ## Reverse gear ratio
@@ -267,26 +267,26 @@ extends RigidBody3D
 ## the responsiveness of the tire.
 ## Surface detection uses node groups to identify the surface, so make sure
 ## your staticbodies and rigidbodies belong to one of these groups.
-@export var tire_stiffnesses := { "Road" : 10.0, "Dirt" : 0.5, "Grass" : 0.5 }
+@export var tire_stiffnesses := {"Road": 10.0, "Dirt": 0.5, "Grass": 0.5}
 ## A multiplier for the amount of force a tire can apply based on the surface.
 ## Surface detection uses node groups to identify the surface, so make sure
 ## your staticbodies and rigidbodies belong to one of these groups.
-@export var coefficient_of_friction := { "Road" : 3.0, "Dirt" : 2.4, "Grass" : 2.0 }
+@export var coefficient_of_friction := {"Road": 3.0, "Dirt": 2.4, "Grass": 2.0}
 ## A multiplier for the amount of rolling resistance force based on the surface.
 ## Surface detection uses node groups to identify the surface, so make sure
 ## your staticbodies and rigidbodies belong to one of these groups.
-@export var rolling_resistance := { "Road" : 1.0, "Dirt" : 2.0, "Grass" : 4.0 }
+@export var rolling_resistance := {"Road": 1.0, "Dirt": 2.0, "Grass": 4.0}
 ## A multiplier to provide more grip based on the amount of lateral wheel slip.
 ## This can be used to keep vehicles from sliding a long distance, but may provide
 ## unrealistically high amounts of grip.
 ## Surface detection uses node groups to identify the surface, so make sure
 ## your staticbodies and rigidbodies belong to one of these groups.
-@export var lateral_grip_assist := { "Road" : 0.05, "Dirt" : 0.0, "Grass" : 0.0}
+@export var lateral_grip_assist := {"Road": 0.05, "Dirt": 0.0, "Grass": 0.0}
 ## A multiplier to adjust longitudinal grip to differ from lateral grip.
 ## Useful for allowing vehicles to have wheel spin and maintain high lateral grip.
 ## Surface detection uses node groups to identify the surface, so make sure
 ## your staticbodies and rigidbodies belong to one of these groups.
-@export var longitudinal_grip_ratio := { "Road" : 0.5, "Dirt": 0.5, "Grass" : 0.5}
+@export var longitudinal_grip_ratio := {"Road": 0.5, "Dirt": 0.5, "Grass": 0.5}
 @export_subgroup("Front Axle", "front_")
 ## Tire radius in meters
 @export var front_tire_radius := 0.3
@@ -331,11 +331,11 @@ extends RigidBody3D
 
 const ANGULAR_VELOCITY_TO_RPM := 60.0 / TAU
 
-var wheel_array : Array[Wheel] = []
-var axles : Array[Axle] = []
-var front_axle : Axle
-var rear_axle : Axle
-var drive_wheels : Array[Wheel] = []
+var wheel_array: Array[Wheel] = []
+var axles: Array[Axle] = []
+var front_axle: Axle
+var rear_axle: Axle
+var drive_wheels: Array[Wheel] = []
 
 ## Controller Inputs: An external script should set these values
 var throttle_input := 0.0
@@ -386,11 +386,11 @@ var rear_axle_position := Vector3.ZERO
 
 var delta_time := 0.0
 
-var vehicle_inertia : Vector3
-var current_gravity : Vector3
+var vehicle_inertia: Vector3
+var current_gravity: Vector3
 
 class Axle:
-	var wheels : Array[Wheel] = []
+	var wheels: Array[Wheel] = []
 	var is_drive_axle := false
 	var inertia := 0.0
 	var handbrake := false
@@ -424,7 +424,7 @@ class Axle:
 func _ready():
 	initialize()
 
-func _integrate_forces(state : PhysicsDirectBodyState3D):
+func _integrate_forces(state: PhysicsDirectBodyState3D):
 	current_gravity = state.total_gravity
 
 func initialize():
@@ -449,7 +449,7 @@ func initialize():
 		push_error("No surface types provided in longitudinal grip ratio")
 		return
 	
-	var default_surface : String = tire_stiffnesses.keys()[0]
+	var default_surface: String = tire_stiffnesses.keys()[0]
 	
 	center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
 	mass = vehicle_mass
@@ -521,7 +521,7 @@ func initialize():
 		wheel.bump_stop_multiplier = front_bump_stop_multiplier
 		wheel.mass_over_wheel = vehicle_mass * front_weight_distribution * 0.5
 		wheel.abs_pulse_time = front_abs_pulse_time
-		wheel.abs_spin_difference_threshold = -absf(front_abs_spin_difference_threshold)
+		wheel.abs_spin_difference_threshold = - absf(front_abs_spin_difference_threshold)
 	
 	var rear_weight_per_wheel := vehicle_mass * (1.0 - front_weight_distribution) * 4.9
 	var rear_spring_rate := calculate_spring_rate(rear_weight_per_wheel, rear_spring_length, rear_resting_ratio)
@@ -542,7 +542,7 @@ func initialize():
 		wheel.bump_stop_multiplier = rear_bump_stop_multiplier
 		wheel.mass_over_wheel = vehicle_mass * (1.0 - front_weight_distribution) * 0.5
 		wheel.abs_pulse_time = rear_abs_pulse_time
-		wheel.abs_spin_difference_threshold = -absf(rear_abs_spin_difference_threshold)
+		wheel.abs_spin_difference_threshold = - absf(rear_abs_spin_difference_threshold)
 	
 	var wheel_base := rear_left_wheel.position.z - front_left_wheel.position.z
 	var front_track_width := front_right_wheel.position.x - front_left_wheel.position.x
@@ -551,15 +551,15 @@ func initialize():
 	var rear_ackermann := (atan((wheel_base * tan(max_steering_angle)) / (wheel_base - (rear_track_width * 0.5 * tan(max_steering_angle)))) / max_steering_angle) - 1.0
 	
 	front_left_wheel.ackermann = front_ackermann
-	front_left_wheel.rotation.z = -front_camber
-	front_left_wheel.toe = -front_toe
-	front_right_wheel.ackermann = -front_ackermann
+	front_left_wheel.rotation.z = - front_camber
+	front_left_wheel.toe = - front_toe
+	front_right_wheel.ackermann = - front_ackermann
 	front_right_wheel.rotation.z = front_camber
 	front_right_wheel.toe = front_toe
 	rear_left_wheel.ackermann = rear_ackermann
-	rear_left_wheel.rotation.z = -rear_camber
-	rear_left_wheel.toe = -rear_toe
-	rear_right_wheel.ackermann = -rear_ackermann
+	rear_left_wheel.rotation.z = - rear_camber
+	rear_left_wheel.toe = - rear_toe
+	rear_right_wheel.ackermann = - rear_ackermann
 	rear_right_wheel.rotation.z = rear_camber
 	rear_right_wheel.toe = rear_toe
 	
@@ -602,7 +602,7 @@ func initialize():
 	
 	is_ready = true
 
-func _physics_process(delta : float) -> void:
+func _physics_process(delta: float) -> void:
 	if not is_ready:
 		return
 	
@@ -633,10 +633,9 @@ func _physics_process(delta : float) -> void:
 func process_drag() -> void:
 	var drag := 0.5 * air_density * pow(speed, 2.0) * frontal_area * coefficient_of_drag
 	if drag > 0.0:
-		apply_central_force(-local_velocity.normalized() * drag)
 		apply_central_force(-linear_velocity.normalized() * drag)
 
-func process_braking(delta : float) -> void:
+func process_braking(delta: float) -> void:
 	if (brake_input < brake_amount):
 		brake_amount -= braking_speed * delta
 		if (brake_input > brake_amount):
@@ -655,7 +654,7 @@ func process_braking(delta : float) -> void:
 	brake_force = brake_amount * max_brake_force
 	handbrake_force = handbrake_input * max_handbrake_force
 
-func process_steering(delta : float) -> void:
+func process_steering(delta: float) -> void:
 	var steer_assist_engaged := false
 	var steering_slip := get_max_steering_slip_angle()
 	
@@ -716,7 +715,7 @@ func process_steering(delta : float) -> void:
 	for wheel in wheel_array:
 		wheel.steer(steering_adjust + steer_correction, max_steering_angle)
 
-func process_throttle(delta : float) -> void:
+func process_throttle(delta: float) -> void:
 	var throttle_delta := throttle_speed * delta
 	
 	if (throttle_input < throttle_amount):
@@ -739,7 +738,7 @@ func process_throttle(delta : float) -> void:
 	else:
 		clutch_amount = clutch_input
 
-func process_motor(delta : float) -> void:
+func process_motor(delta: float) -> void:
 	var drag_torque := motor_rpm * motor_drag
 	torque_output = get_torque_at_rpm(motor_rpm) * throttle_amount
 	## Adjust torque based on throttle input, clutch input, and motor drag
@@ -764,7 +763,7 @@ func process_motor(delta : float) -> void:
 	
 	motor_rpm = maxf(motor_rpm, idle_rpm)
 
-func process_clutch(delta : float):
+func process_clutch(delta: float):
 	if current_gear == 0:
 		return
 	
@@ -775,13 +774,13 @@ func process_clutch(delta : float):
 	var reaction_torque := get_drive_wheels_reaction_torque() / current_gear_ratio
 	var speed_difference := (motor_rpm / ANGULAR_VELOCITY_TO_RPM) - (get_drivetrain_spin() * current_gear_ratio)
 	if speed_difference < 0.0:
-		speed_difference = -sqrt(-speed_difference)
+		speed_difference = - sqrt(-speed_difference)
 	var a := (motor_moment * drive_inertia_R * speed_difference) / delta
 	var b := motor_moment * reaction_torque
 	var c := drive_inertia_R * torque_output
 	var clutch_factor := (1.0 - clutch_amount)
 	var tcs_torque_reduction := 0.0
-	clutch_torque = ((a - b + c)/(motor_moment + drive_inertia_R)) * clutch_factor
+	clutch_torque = ((a - b + c) / (motor_moment + drive_inertia_R)) * clutch_factor
 	clutch_torque = clampf(clutch_torque, -max_clutch_torque * clutch_factor, max_clutch_torque * clutch_factor)
 	
 	## Check if traction control is needed and adjust motor speed and clutch torque if needed
@@ -861,7 +860,7 @@ func process_transmission() -> void:
 					if delta_time - last_shift_delta_time > shift_time:
 						shift(1)
 
-func process_drive(delta : float) -> void:
+func process_drive(delta: float) -> void:
 	var current_gear_ratio := get_gear_ratio(current_gear)
 	var drive_torque := 0.0
 	var drive_inertia := motor_moment + pow(current_gear_ratio, 2) * gear_inertia
@@ -886,17 +885,17 @@ func process_drive(delta : float) -> void:
 		axle_a = rear_axle
 		axle_b = front_axle
 	var axle_difference := axle_a.get_spin() - axle_b.get_spin()
-	var a : float = (axle_a.inertia * axle_b.inertia * axle_difference) / delta
-	var b : float = axle_a.inertia
-	var c : float = axle_b.inertia * drive_torque
-	var transfer_torque := (a - b + c)/(axle_a.inertia + axle_b.inertia)
+	var a: float = (axle_a.inertia * axle_b.inertia * axle_difference) / delta
+	var b: float = axle_a.inertia
+	var c: float = axle_b.inertia * drive_torque
+	var transfer_torque := (a - b + c) / (axle_a.inertia + axle_b.inertia)
 	transfer_torque = clampf(transfer_torque, -absf(drive_torque), absf(drive_torque)) * (1.0 - absf((0.5 - true_torque_split) * 2.0))
 	var transfer_torque_2 := drive_torque - transfer_torque
 	
 	process_axle_drive(axle_b, transfer_torque, drive_inertia, delta)
 	process_axle_drive(axle_a, transfer_torque_2, drive_inertia, delta)
 
-func process_axle_drive(axle : Axle, torque : float, drive_inertia : float, delta : float) -> void:
+func process_axle_drive(axle: Axle, torque: float, drive_inertia: float, delta: float) -> void:
 	if not axle.is_drive_axle:
 		torque = 0.0
 		drive_inertia = 0.0
@@ -930,10 +929,10 @@ func process_axle_drive(axle : Axle, torque : float, drive_inertia : float, delt
 	rotation_sum += axle.wheels[1].process_torque(torque * (1.0 - split), drive_inertia, brake_force * 0.5 * axle.brake_bias, allow_abs, delta)
 	axle.rotation_split = clampf(rotation_sum, -1.0, 1.0)
 
-func process_forces(delta : float) -> void:
+func process_forces(delta: float) -> void:
 	## Spring compression values are kept for antiroll bar calculations
 	for axle in axles:
-		var previous_compression_left : float = axle.suspension_compression_left
+		var previous_compression_left: float = axle.suspension_compression_left
 		axle.suspension_compression_left = axle.wheels[0].process_forces(axle.suspension_compression_right, is_braking, delta)
 		axle.suspension_compression_right = axle.wheels[1].process_forces(previous_compression_left, is_braking, delta)
 
@@ -965,11 +964,11 @@ func process_stability() -> void:
 	
 	stability_active = is_stability_on
 
-func manual_shift(count : int) -> void:
+func manual_shift(count: int) -> void:
 	if not automatic_transmission:
 		shift(count)
 
-func shift(count : int) -> void:
+func shift(count: int) -> void:
 	if is_shifting:
 		return
 	
@@ -1029,7 +1028,7 @@ func get_drive_wheels_reaction_torque() -> float:
 		reaction_torque += wheel.force_vector.y * wheel.tire_radius
 	return reaction_torque
 
-func get_gear_ratio(gear : int) -> float:
+func get_gear_ratio(gear: int) -> float:
 	if gear > 0:
 		return gear_ratios[gear - 1] * final_drive
 	elif gear == -1:
@@ -1037,7 +1036,7 @@ func get_gear_ratio(gear : int) -> float:
 	else:
 		return 0.0
 
-func get_torque_at_rpm(lookup_rpm : float) -> float:
+func get_torque_at_rpm(lookup_rpm: float) -> float:
 	var rpm_factor = clamp(lookup_rpm / max_rpm, 0.0, 1.0)
 	var torque_factor = torque_curve.sample_baked(rpm_factor)
 	return torque_factor * max_torque
@@ -1049,7 +1048,7 @@ func get_max_steering_slip_angle() -> float:
 			steering_slip = wheel.slip_vector.x
 	return steering_slip
 
-func calculate_average_tire_friction(weight : float, surface : String) -> float:
+func calculate_average_tire_friction(weight: float, surface: String) -> float:
 	var friction := 0.0
 	for wheel in wheel_array:
 		friction += wheel.get_friction(weight / wheel_array.size(), surface)
@@ -1060,18 +1059,18 @@ func calculate_brake_force() -> void:
 	max_brake_force = ((friction * braking_grip_multiplier) * average_drive_wheel_radius) / wheel_array.size()
 	max_handbrake_force = ((friction * braking_grip_multiplier * 0.05) / average_drive_wheel_radius)
 
-func calculate_center_of_gravity(front_distribution : float) -> Vector3:
+func calculate_center_of_gravity(front_distribution: float) -> Vector3:
 	front_axle_position = front_left_wheel.position.lerp(front_right_wheel.position, 0.5)
 	rear_axle_position = rear_left_wheel.position.lerp(rear_right_wheel.position, 0.5)
 	return lerp(rear_axle_position, front_axle_position, front_distribution)
 
-func calculate_spring_rate(weight : float, spring_length : float, resting_ratio : float) -> float:
+func calculate_spring_rate(weight: float, spring_length: float, resting_ratio: float) -> float:
 	var corrected_resting_ratio := (spring_length * resting_ratio) / spring_length
 	var target_compression := spring_length * corrected_resting_ratio * 1000.0
 	return weight / target_compression
 
-func calculate_damping(weight : float, spring_rate : float, damping_ratio : float) -> float:
+func calculate_damping(weight: float, spring_rate: float, damping_ratio: float) -> float:
 	return damping_ratio * 2.0 * sqrt(spring_rate * weight) * 0.01
 
-func calculate_axle_spring_force(compression : float, spring_length : float, spring_rate : float) -> float:
+func calculate_axle_spring_force(compression: float, spring_length: float, spring_rate: float) -> float:
 	return spring_length * compression * 1000.0 * spring_rate * 2.0
