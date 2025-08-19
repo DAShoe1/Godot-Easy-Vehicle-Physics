@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://brlo4dakc5fgs"]
+
+[ext_resource type="AudioStream" uid="uid://dio25xn4f7s6f" path="res://addons/gevp/sounds/4000.wav" id="1_hj3nr"]
+[ext_resource type="Script" uid="uid://dagjxo6vvqby" path="res://addons/gevp/gevp-cs/scripts/cs_engine_sound.gd" id="2_77qnw"]
+
+[node name="CSEngineSound" type="AudioStreamPlayer3D"]
+stream = ExtResource("1_hj3nr")
+autoplay = true
+script = ExtResource("2_77qnw")
