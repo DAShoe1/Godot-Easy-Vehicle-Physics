@@ -178,6 +178,8 @@ extends RigidBody3D
 @export var vehicle_mass := 1500.0
 ## The percentage of the vehicle mass over the front axle.
 @export var front_weight_distribution := 0.5
+## The percentage of the vehicle mass over the right wheels.
+@export var right_weight_distribution := 0.5
 ## The center of gravity is calculated from the front weight distribution
 ## with the height centered on the wheel raycast positions. This will offset
 ## the height from that calculated position.
@@ -453,7 +455,7 @@ func initialize():
 	
 	center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
 	mass = vehicle_mass
-	var center_of_gravity := calculate_center_of_gravity(front_weight_distribution)
+	var center_of_gravity := calculate_center_of_gravity(front_weight_distribution, right_weight_distribution)
 	center_of_gravity.y += center_of_gravity_height_offset
 	center_of_mass = center_of_gravity
 	max_clutch_torque = max_torque * max_clutch_torque_ratio
@@ -1059,9 +1061,9 @@ func calculate_brake_force() -> void:
 	max_brake_force = ((friction * braking_grip_multiplier) * average_drive_wheel_radius) / wheel_array.size()
 	max_handbrake_force = ((friction * braking_grip_multiplier * 0.05) / average_drive_wheel_radius)
 
-func calculate_center_of_gravity(front_distribution : float) -> Vector3:
-	front_axle_position = front_left_wheel.position.lerp(front_right_wheel.position, 0.5)
-	rear_axle_position = rear_left_wheel.position.lerp(rear_right_wheel.position, 0.5)
+func calculate_center_of_gravity(front_distribution : float, right_distribution : float) -> Vector3:
+	front_axle_position = front_left_wheel.position.lerp(front_right_wheel.position, right_distribution)
+	rear_axle_position = rear_left_wheel.position.lerp(rear_right_wheel.position, right_distribution)
 	return lerp(rear_axle_position, front_axle_position, front_distribution)
 
 func calculate_spring_rate(weight : float, spring_length : float, resting_ratio : float) -> float:
